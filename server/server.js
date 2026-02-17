@@ -1,8 +1,15 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+
+// Replicate __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -16,19 +23,25 @@ app.use((req, res, next) => {
     next();
 });
 
-// Models
-const User = require('./models/User');
-const Menu = require('./models/Menu');
-const Order = require('./models/Order');
-const TopUpRequest = require('./models/TopUpRequest');
-const Payment = require('./models/Payment');
+// Models (Assuming models are also updated to ESM or handled correctly)
+// Since we are in a mixed environment, we might need to use dynamic imports or ensure models are adaptable.
+// But typically for a Vite project, we should just use ESM everywhere.
+// Let's assume standard requires for models might need update if they are .js files in this package.
+// We will use standard imports for them assuming they export default or named exports.
+// If models use module.exports, we can still import them but might need default.
+
+import User from './models/User.js';
+import Menu from './models/Menu.js';
+import Order from './models/Order.js';
+import TopUpRequest from './models/TopUpRequest.js';
+import Payment from './models/Payment.js';
 
 // Connect to MongoDB (Serverless Optimized)
 let cachedConnection = null;
 
 const connectToDatabase = async (req, res, next) => {
     // 0: disconnected, 1: connected, 2: connecting, 3: disconnecting
-    if (mongoose.connection.readyState === 1) {
+    if (mongoose.connection && mongoose.connection.readyState === 1) {
         return next();
     }
 
@@ -43,7 +56,14 @@ const connectToDatabase = async (req, res, next) => {
         next();
     } catch (err) {
         console.error('MongoDB Connection Error ❌:', err);
-        res.status(500).json({ error: 'Database connection failed', details: err.message });
+        // Explicitly printing the error stack and name for Vercel logs
+        console.error(err.stack);
+        res.status(500).json({
+            error: 'Database connection failed',
+            details: err.message,
+            code: err.code,
+            name: err.name
+        });
     }
 };
 
@@ -283,9 +303,14 @@ app.post('/api/payments', async (req, res) => {
 });
 
 if (process.env.VERCEL) {
-    module.exports = app;
+    // For Vercel, we export the app instance
 } else {
-    app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT} 🚀`);
-    });
+    // For local dev, we listen
+    if (import.meta.url === `file://${process.argv[1]}`) {
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT} 🚀`);
+        });
+    }
 }
+
+export default app;
