@@ -39,7 +39,8 @@ const Login = ({ onLogin }) => {
         } catch (err) {
             console.error('Login error:', err);
             const status = err.response?.status;
-            const msg = err.response?.data?.error || err.message;
+            let msg = err.response?.data?.details || err.response?.data?.error || err.message;
+            if (typeof msg === 'object') msg = JSON.stringify(msg);
 
             if (status === 404) {
                 alert(`Server Error (404): API Route not found. Please check deployment. (${msg})`);
