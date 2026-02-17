@@ -123,7 +123,7 @@ const LandingPage = ({ onLoginClick }) => {
                             ✨ আপনার ঘরের স্বাদের নিশ্চয়তা
                         </div>
                         <h1 style={{ fontSize: '4rem', marginBottom: '1.5rem', color: '#0f172a', lineHeight: '1.1', fontWeight: '900' }}>
-                            শহরের সেরা <span style={{ color: 'var(--primary)' }}>গৌরব খাবার</span> <br /> এখন আপনার দুয়ারে
+                            শহরের সেরা <span style={{ color: 'var(--primary)' }}>খাবার</span> <br /> এখন আপনার দরজায়
                         </h1>
                         <p style={{ fontSize: '1.5rem', color: '#475569', marginBottom: '2.5rem', lineHeight: '1.6', maxWidth: '800px', margin: '0 auto 2.5rem' }}>
                             আমরা প্রতিদিন স্বাস্থ্যকর এবং ঘরোয়া স্বাদের দুপুরের ও রাতের খাবার সরবরাহ করি। আপনার ব্যস্ত জীবনে পুষ্টিকর খাবারের দুশ্চিন্তা ছাড়ুন আমাদের ওপর।

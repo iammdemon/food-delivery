@@ -23,16 +23,34 @@ const Order = require('./models/Order');
 const TopUpRequest = require('./models/TopUpRequest');
 const Payment = require('./models/Payment');
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => {
-        console.log('Connected to MongoDB Atlas ✅');
-        console.log('Ready for operations on port ' + PORT);
-    })
-    .catch(err => console.error('MongoDB Connection Error ❌:', err));
+// Connect to MongoDB (Serverless Optimized)
+let cachedConnection = null;
 
-mongoose.connection.on('connected', () => console.log('Mongoose: Connected to Atlas 🌐'));
-mongoose.connection.on('error', (err) => console.error('Mongoose: Connection Error ❌:', err));
+const connectToDatabase = async (req, res, next) => {
+    // 0: disconnected, 1: connected, 2: connecting, 3: disconnecting
+    if (mongoose.connection.readyState === 1) {
+        return next();
+    }
+
+    try {
+        if (!cachedConnection) {
+            console.log('Creating new MongoDB connection...');
+            cachedConnection = await mongoose.connect(process.env.MONGODB_URI, {
+                serverSelectionTimeoutMS: 5000 // Fail fast if no connection
+            });
+            console.log('MongoDB Connected ✅');
+        }
+        next();
+    } catch (err) {
+        console.error('MongoDB Connection Error ❌:', err);
+        res.status(500).json({ error: 'Database connection failed', details: err.message });
+    }
+};
+
+// Use connection middleware for all API routes
+app.use(connectToDatabase);
+
+// Events
 mongoose.connection.on('disconnected', () => console.log('Mongoose: Disconnected ⚠️'));
 
 // --- API Routes ---

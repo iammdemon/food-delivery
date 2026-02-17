@@ -38,7 +38,16 @@ const Login = ({ onLogin }) => {
             onLogin(userData);
         } catch (err) {
             console.error('Login error:', err);
-            alert('Login failed. Please check your connection.');
+            const status = err.response?.status;
+            const msg = err.response?.data?.error || err.message;
+
+            if (status === 404) {
+                alert(`Server Error (404): API Route not found. Please check deployment. (${msg})`);
+            } else if (status === 500) {
+                alert(`Database Error (500): Check MongoDB connection in Vercel settings. (${msg})`);
+            } else {
+                alert(`Login Failed: ${msg}. Check your internet connection.`);
+            }
         } finally {
             setIsLoading(false);
         }
