@@ -1,17 +1,17 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
-    customerId: { type: String, required: true }, // Using username/ID as string for simplicity with current login
+    customerId: { type: String, required: true },
     customerName: { type: String, required: true },
-    customerPhone: { type: String },
-    customerAddress: { type: String },
+    customerPhone: String,
+    customerAddress: String,
     type: { type: String, enum: ['lunch', 'dinner'], required: true },
-    items: [{ type: String }],
-    total: { type: Number, required: true },
-    status: { type: String, enum: ['Paid', 'Assigned', 'Delivered'], default: 'Paid' },
-    assignedRider: { type: String, default: null },
-    deliveryProof: { type: String, default: null }, // Base64 string or URL
-    timestamp: { type: Number, default: () => Date.now() }
-}, { timestamps: true });
+    items: [String],
+    total: Number,
+    status: { type: String, enum: ['Pending', 'Cooking', 'Out for Delivery', 'Delivered'], default: 'Pending' },
+    riderName: { type: String, default: 'Unassigned' },
+    deliveryProof: { type: String, default: '' }, // New field for photo URL
+    timestamp: { type: Date, default: Date.now }
+});
 
-module.exports = mongoose.model('Order', OrderSchema);
+export default mongoose.model('Order', OrderSchema);

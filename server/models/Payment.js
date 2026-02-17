@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const paymentSchema = new mongoose.Schema({
+const PaymentSchema = new mongoose.Schema({
     riderName: { type: String, required: true },
     amount: { type: Number, required: true },
-    date: { type: String, required: true },
-    timestamp: { type: Number, default: () => Date.now() }
+    date: { type: String, required: true }, // Format: YYYY-MM-DD
+    timestamp: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Payment', paymentSchema);
+export default mongoose.model('Payment', PaymentSchema);
