@@ -63,7 +63,7 @@ const Login = ({ onLogin }) => {
                 <form onSubmit={handleSubmit} className="grid" style={{ gap: '1.5rem' }}>
                     <input
                         type="text"
-                        placeholder="Username (Emon, Admin, or Rider Name)"
+                        placeholder="Username (Lamia, Admin, or Tisa)"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={isLoading}

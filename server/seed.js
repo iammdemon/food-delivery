@@ -1,9 +1,14 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-const mongoose = require('mongoose');
-const User = require('./models/User');
-const Menu = require('./models/Menu');
-const Order = require('./models/Order');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import User from './models/User.js';
+import Menu from './models/Menu.js';
+import Order from './models/Order.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const demoMenu = [
     { name: 'Basmati Rice', price: 40, category: 'lunch', icon: '🍚' },
@@ -18,9 +23,9 @@ const demoMenu = [
 ];
 
 const demoUsers = [
-    { username: 'admin', name: 'System Admin', role: 'admin', balance: 0 },
-    { username: 'rider1', name: 'Karim Rider', role: 'rider', balance: 0 },
-    { username: 'emon', name: 'Emon Customer', role: 'customer', balance: 5000, phone: '01711223344', address: 'Banani, Dhaka' }
+    { username: 'admin', name: 'Admin', role: 'admin', balance: 0 },
+    { username: 'tisa', name: 'Tisa', role: 'rider', balance: 0 },
+    { username: 'lamia', name: 'Lamia', role: 'customer', balance: 5000, phone: '01711223344', address: 'Banani, Dhaka' }
 ];
 
 const seedDB = async () => {
@@ -41,11 +46,11 @@ const seedDB = async () => {
         await User.insertMany(demoUsers);
         console.log('Inserted demo users 👥');
 
-        // Create a few demo orders for 'emon'
+        // Create a few demo orders for 'lamia'
         const demoOrders = [
             {
-                customerId: 'emon',
-                customerName: 'Emon Customer',
+                customerId: 'lamia',
+                customerName: 'Lamia',
                 customerPhone: '01711223344',
                 customerAddress: 'Banani, Dhaka',
                 type: 'lunch',
@@ -55,14 +60,14 @@ const seedDB = async () => {
                 timestamp: Date.now() - 86400000 // 1 day ago
             },
             {
-                customerId: 'emon',
-                customerName: 'Emon Customer',
+                customerId: 'lamia',
+                customerName: 'Lamia',
                 customerPhone: '01711223344',
                 customerAddress: 'Banani, Dhaka',
                 type: 'dinner',
                 items: ['Fish Curry', 'Potato Vorta'],
                 total: 130,
-                status: 'Paid',
+                status: 'Pending',
                 timestamp: Date.now()
             }
         ];

@@ -306,11 +306,9 @@ if (process.env.VERCEL) {
     // For Vercel, we export the app instance
 } else {
     // For local dev, we listen
-    if (import.meta.url === `file://${process.argv[1]}`) {
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT} 🚀`);
-        });
-    }
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT} 🚀`);
+    });
 }
 
 export default app;
