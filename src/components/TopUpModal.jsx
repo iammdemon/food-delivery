@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import toast from 'react-hot-toast';
+import toast from '../utils/toast';
 
 const TopUpModal = ({ onClose, onSubmit }) => {
     const [amount, setAmount] = useState('');
