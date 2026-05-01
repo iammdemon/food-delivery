@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 import API_BASE from '../api';
 
@@ -39,9 +40,9 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
         try {
             await axios.patch(`${API_BASE}/orders/${orderId}`, { status });
             await fetchData();
-            alert(`Order status updated to ${status}! 🍳`);
+            toast.success(`Order status updated to ${status}! 🍳`);
         } catch (err) {
-            alert('Failed to update status');
+            toast.error('Failed to update status');
         } finally {
             setUpdatingId(null);
         }

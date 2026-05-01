@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 import API_BASE from '../api';
 
@@ -51,7 +52,7 @@ const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fet
     };
 
     const markAsDelivered = async (orderId, proofImg) => {
-        if (!proofImg) return alert('Please upload a delivery photo first!');
+        if (!proofImg) return toast.error('Please upload a delivery photo first!');
         if (isCompleting[orderId]) return;
 
         setIsCompleting(prev => ({ ...prev, [orderId]: true }));
@@ -78,11 +79,11 @@ const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fet
                 return newState;
             });
 
-            alert('Delivery completed successfully! 🚚✅');
+            toast.success('Delivery completed successfully! 🚚✅');
         } catch (error) {
             console.error('Delivery failure:', error);
             setIsCompleting(prev => ({ ...prev, [orderId]: false }));
-            alert('Error completing delivery. Check server connection.');
+            toast.error('Error completing delivery. Check server connection.');
         }
     };
 

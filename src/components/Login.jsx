@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 import API_BASE from '../api';
 
@@ -43,11 +44,11 @@ const Login = ({ onLogin }) => {
             if (typeof msg === 'object') msg = JSON.stringify(msg);
 
             if (status === 404) {
-                alert(`Server Error (404): API Route not found. Please check deployment. (${msg})`);
+                toast.error(`Server Error (404): API Route not found. Please check deployment. (${msg})`);
             } else if (status === 500) {
-                alert(`Database Error (500): Check MongoDB connection in Vercel settings. (${msg})`);
+                toast.error(`Database Error (500): Check MongoDB connection in Vercel settings. (${msg})`);
             } else {
-                alert(`Login Failed: ${msg}. Check your internet connection.`);
+                toast.error(`Login Failed: ${msg}. Check your internet connection.`);
             }
         } finally {
             setIsLoading(false);

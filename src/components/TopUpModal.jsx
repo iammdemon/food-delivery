@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const TopUpModal = ({ onClose, onSubmit }) => {
     const [amount, setAmount] = useState('');
@@ -19,7 +20,7 @@ const TopUpModal = ({ onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!amount || !senderPhone || !screenshot) {
-            return alert('Please fill all fields and upload a screenshot!');
+            return toast.error('Please fill all fields and upload a screenshot!');
         }
         onSubmit({ amount, senderPhone, screenshot });
     };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import { useWallet } from './hooks/useWallet';
 import { useTimeCheck } from './hooks/useTimeCheck';
@@ -145,9 +146,9 @@ const AppContent = () => {
       });
       fetchData();
       setShowTopUpModal(false);
-      alert('Top-up request sent! Admin will approve it soon. ⏳');
+      toast.success('Top-up request sent! Admin will approve it soon. ⏳');
     } catch (err) {
-      alert('Failed to send request.');
+      toast.error('Failed to send request.');
     }
   };
 
@@ -164,10 +165,10 @@ const AppContent = () => {
 
   const placeOrder = async (type) => {
     const totalPending = selectedItems.reduce((sum, item) => sum + item.price, 0);
-    if (selectedItems.length === 0) return alert('Select some food first!');
-    if (totalPending > balance) return alert('Insufficient balance!');
+    if (selectedItems.length === 0) return toast.error('Select some food first!');
+    if (totalPending > balance) return toast.error('Insufficient balance!');
     if (!profile.phone || !profile.address) {
-      alert('Complete profile first!');
+      toast.error('Complete profile first!');
       setActiveTab('profile');
       return;
     }
@@ -182,8 +183,8 @@ const AppContent = () => {
         total: totalPending
       });
       fetchData(); refreshWallet(); setSelectedItems([]);
-      alert('Order placed! 🍱');
-    } catch (err) { alert('Failed to place order.'); }
+      toast.success('Order placed! 🍱');
+    } catch (err) { toast.error('Failed to place order.'); }
   };
 
   const myOrders = orderHistory.filter(o => o.customerId === (user?.username || user?.id));
@@ -232,6 +233,7 @@ const AppContent = () => {
 
 const App = () => (
   <Router>
+    <Toaster position="top-right" reverseOrder={false} />
     <AppContent />
   </Router>
 );

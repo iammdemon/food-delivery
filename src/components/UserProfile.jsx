@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const UserProfile = ({ profile, onUpdate, initialName }) => {
     const [draft, setDraft] = useState({ name: '', phone: '', address: '' });
@@ -17,7 +18,7 @@ const UserProfile = ({ profile, onUpdate, initialName }) => {
 
     const handleSave = (e) => {
         e.preventDefault();
-        if (!draft.name.trim()) return alert('Name cannot be empty!');
+        if (!draft.name.trim()) return toast.error('Name cannot be empty!');
 
         setIsSaving(true);
 

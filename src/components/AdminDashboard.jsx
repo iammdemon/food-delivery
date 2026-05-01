@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 import API_BASE from '../api';
 
@@ -54,7 +55,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 
     const addDish = async (e) => {
         e.preventDefault();
-        if (!itemName || !itemPrice) return alert('Fill all fields!');
+        if (!itemName || !itemPrice) return toast.error('Fill all fields!');
         try {
             await axios.post(`${API_BASE}/menu`, {
                 name: itemName,
@@ -64,8 +65,9 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             });
             fetchData();
             setItemName(''); setItemPrice('');
+            toast.success('Dish added successfully!');
         } catch (err) {
-            alert('Failed to add dish');
+            toast.error('Failed to add dish');
         }
     };
 
@@ -73,21 +75,22 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
         try {
             await axios.delete(`${API_BASE}/menu/${id}`);
             fetchData();
+            toast.success('Dish removed');
         } catch (err) {
-            alert('Failed to remove dish');
+            toast.error('Failed to remove dish');
         }
     };
 
     const addRider = async (e) => {
         e.preventDefault();
-        if (!newRiderName) return alert('Enter rider name!');
+        if (!newRiderName) return toast.error('Enter rider name!');
         try {
             await axios.post(`${API_BASE}/riders`, { name: newRiderName });
             fetchData();
             setNewRiderName('');
-            alert('Rider added successfully! 🛵');
+            toast.success('Rider added successfully! 🛵');
         } catch (err) {
-            alert('Failed to add rider');
+            toast.error('Failed to add rider');
         }
     };
 
@@ -98,8 +101,9 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                 status: 'Assigned'
             });
             fetchData();
+            toast.success('Rider assigned');
         } catch (err) {
-            alert('Failed to assign rider');
+            toast.error('Failed to assign rider');
         }
     };
 
@@ -116,9 +120,9 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             await axios.patch(`${API_BASE}/topup/${req._id || req.id}/approve`);
             fetchData();
             window.dispatchEvent(new CustomEvent('walletUpdate'));
-            alert(`Success! Requested amount added to ${req.username}'s wallet.`);
+            toast.success(`Success! Requested amount added to ${req.username}'s wallet.`);
         } catch (err) {
-            alert('Failed to approve top-up');
+            toast.error('Failed to approve top-up');
         }
     };
 
@@ -127,8 +131,9 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
         try {
             await axios.patch(`${API_BASE}/topup/${reqId}/reject`);
             fetchData();
+            toast.success('Top-up request rejected');
         } catch (err) {
-            alert('Failed to reject top-up');
+            toast.error('Failed to reject top-up');
         }
     };
 
@@ -302,9 +307,9 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                 });
                                 fetchData();
                                 setPayAmount('');
-                                alert('Payment recorded! 💸');
+                                toast.success('Payment recorded! 💸');
                             } catch (err) {
-                                alert('Failed to record payment');
+                                toast.error('Failed to record payment');
                             }
                         }} className="grid" style={{ gap: '1rem', marginTop: '1.5rem' }}>
                             <select value={selectedRiderForPay} onChange={e => setSelectedRiderForPay(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }}>

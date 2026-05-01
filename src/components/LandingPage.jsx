@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const LandingPage = ({ onLoginClick }) => {
     const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ const LandingPage = ({ onLoginClick }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert(`ধন্যবাদ ${formData.name}! আপনার ${formData.package === 'monthly' ? 'মাসিক' : 'সাপ্তাহিক'} প্যাকেজের অনুরোধটি গ্রহণ করা হয়েছে। আমরা শীঘ্রই যোগাযোগ করবো।`);
+        toast.success(`ধন্যবাদ ${formData.name}! আপনার ${formData.package === 'monthly' ? 'মাসিক' : 'সাপ্তাহিক'} প্যাকেজের অনুরোধটি গ্রহণ করা হয়েছে। আমরা শীঘ্রই যোগাযোগ করবো।`);
         setShowModal(false);
     };
 
