@@ -8,9 +8,9 @@ const OrderSchema = new mongoose.Schema({
     type: { type: String, enum: ['lunch', 'dinner'], required: true },
     items: [String],
     total: Number,
-    status: { type: String, enum: ['Pending', 'Cooking', 'Out for Delivery', 'Delivered'], default: 'Pending' },
-    riderName: { type: String, default: 'Unassigned' },
-    deliveryProof: { type: String, default: '' }, // New field for photo URL
+    status: { type: String, enum: ['Paid', 'Assigned', 'Confirmed', 'Preparing', 'Sent For Delivery', 'Delivered', 'Cancelled'], default: 'Paid' },
+    assignedRider: { type: String, default: '' },
+    deliveryProof: { type: String, default: '' },
     timestamp: { type: Date, default: Date.now }
 });
 
