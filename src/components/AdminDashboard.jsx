@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5001/api';
+import API_BASE from '../api';
 
 const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments, setPayments, topUpRequests, setTopUpRequests, fetchData }) => {
     const [activeTab, setActiveTab] = useState('overview');

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const API_BASE = import.meta.env.PROD ? '/api' : 'http://localhost:5001/api';
+import API_BASE from '../api';
 
 export const useProfile = (username) => {
     const [profile, setProfile] = useState({ phone: '', address: '' });

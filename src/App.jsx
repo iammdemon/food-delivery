@@ -15,7 +15,7 @@ import LandingPage from './components/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CustomerDashboard from './components/CustomerDashboard';
 
-const API_BASE = import.meta.env.PROD ? '/api' : 'http://localhost:5001/api';
+import API_BASE from './api';
 
 // Extracted DashboardLayout to prevent re-creation on every render
 const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balance, setShowTopUpModal, handleLogout, showTopUpModal, handleTopUpRequest }) => (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5001/api';
+import API_BASE from '../api';
 
 const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fetchData }) => {
     const [deliveryPhotos, setDeliveryPhotos] = useState({}); // To store local base64 for unsaved orders
