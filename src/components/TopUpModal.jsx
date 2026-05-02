@@ -5,10 +5,14 @@ const TopUpModal = ({ onClose, onSubmit }) => {
     const [amount, setAmount] = useState('');
     const [senderPhone, setSenderPhone] = useState('');
     const [screenshot, setScreenshot] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                return toast.error('Image size too large! Please use a smaller file (< 5MB).');
+            }
             const reader = new FileReader();
             reader.onloadend = () => {
                 setScreenshot(reader.result);
@@ -17,12 +21,21 @@ const TopUpModal = ({ onClose, onSubmit }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!amount || !senderPhone || !screenshot) {
             return toast.error('Please fill all fields and upload a screenshot!');
         }
-        onSubmit({ amount, senderPhone, screenshot });
+        
+        setIsLoading(true);
+        try {
+            await onSubmit({ amount, senderPhone, screenshot });
+        } catch (err) {
+            console.error('Submission error:', err);
+            toast.error('Submission failed. Please check your internet or try a smaller image.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -52,7 +65,8 @@ const TopUpModal = ({ onClose, onSubmit }) => {
                             placeholder="Enter amount (e.g. 500)"
                             value={amount}
                             onChange={e => setAmount(e.target.value)}
-                            style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '8px' }}
+                            disabled={isLoading}
+                            style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '8px', opacity: isLoading ? 0.5 : 1 }}
                         />
                     </div>
 
@@ -63,7 +77,8 @@ const TopUpModal = ({ onClose, onSubmit }) => {
                             placeholder="01XXXXXXXXX"
                             value={senderPhone}
                             onChange={e => setSenderPhone(e.target.value)}
-                            style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '8px' }}
+                            disabled={isLoading}
+                            style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '8px', opacity: isLoading ? 0.5 : 1 }}
                         />
                     </div>
 
@@ -95,13 +110,19 @@ const TopUpModal = ({ onClose, onSubmit }) => {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
-                                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, cursor: 'pointer' }}
+                                disabled={isLoading}
+                                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, cursor: isLoading ? 'not-allowed' : 'pointer' }}
                             />
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-primary" style={{ padding: '1rem', background: '#e2136e', borderColor: '#e2136e' }}>
-                        Submit Top-Up Request
+                    <button 
+                        type="submit" 
+                        className="btn-primary" 
+                        disabled={isLoading}
+                        style={{ padding: '1rem', background: '#e2136e', borderColor: '#e2136e', opacity: isLoading ? 0.7 : 1 }}
+                    >
+                        {isLoading ? 'Submitting...' : 'Submit Top-Up Request'}
                     </button>
                 </form>
             </div>

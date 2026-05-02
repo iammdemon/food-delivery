@@ -247,6 +247,16 @@ app.patch('/api/topup/:id/approve', async (req, res) => {
     }
 });
 
+app.patch('/api/topup/:id/reject', async (req, res) => {
+    try {
+        const request = await TopUpRequest.findByIdAndUpdate(req.params.id, { status: 'Rejected' }, { new: true });
+        res.json(request);
+    } catch (err) {
+        console.error('Reject Topup Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // 5. Rider Routes
 app.get('/api/riders', async (req, res) => {
     try {
