@@ -40,7 +40,7 @@ const TopUpModal = ({ onClose, onSubmit }) => {
                     <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}><strong>Instructions:</strong></p>
                     <p style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>1. Go to your bKash App or dial *247#</p>
                     <p style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>2. Choose <strong>"Send Money"</strong></p>
-                    <p style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>3. Enter Number: <strong style={{ color: '#e2136e' }}>01606305982</strong></p>
+                    <p style={{ fontSize: '0.85rem', marginBottom: '0.3rem' }}>3. Enter Number: <strong style={{ color: '#e2136e' }}>01600000000</strong></p>
                     <p style={{ fontSize: '0.85rem' }}>4. Take a screenshot of the success message.</p>
                 </div>
 
