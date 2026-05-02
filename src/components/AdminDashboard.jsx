@@ -4,7 +4,7 @@ import toast from '../utils/toast';
 
 import API_BASE from '../api';
 
-const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments, setPayments, topUpRequests, setTopUpRequests, fetchData }) => {
+const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments, setPayments, topUpRequests, setTopUpRequests, subscriptionRequests, setSubscriptionRequests, fetchData }) => {
     const [activeTab, setActiveTab] = useState('overview');
 
     // Menu form state
@@ -137,6 +137,27 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
         }
     };
 
+    const handleUpdateSubscriptionStatus = async (id, status) => {
+        try {
+            await axios.patch(`${API_BASE}/subscriptions/${id}`, { status });
+            fetchData();
+            toast.success(`Subscription marked as ${status}`);
+        } catch (err) {
+            toast.error('Failed to update status');
+        }
+    };
+
+    const handleDeleteSubscription = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this request?')) return;
+        try {
+            await axios.delete(`${API_BASE}/subscriptions/${id}`);
+            fetchData();
+            toast.success('Request deleted');
+        } catch (err) {
+            toast.error('Failed to delete request');
+        }
+    };
+
     return (
         <div className="animate-fade-in grid" style={{ gap: '2rem' }}>
             {/* Proof Modal */}
@@ -150,14 +171,19 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 
             {/* Admin Tab Navigation */}
             <nav className="flex" style={{ gap: '1rem', background: 'var(--glass-bg)', padding: '0.5rem', borderRadius: '12px' }}>
-                {['overview', 'menu', 'riders', 'orders', 'payments'].map(tab => (
+                {['overview', 'menu', 'riders', 'orders', 'payments', 'subscriptions'].map(tab => (
                     <button
                         key={tab}
                         className={activeTab === tab ? 'btn-primary' : 'btn-outline'}
                         onClick={() => setActiveTab(tab)}
                         style={{ padding: '0.6rem 1.2rem', textTransform: 'capitalize', border: activeTab === tab ? 'none' : '1px solid var(--glass-border)' }}
                     >
-                        {tab === 'payments' ? 'TopUp Requests' : tab}
+                        {tab === 'overview' ? 'ওভারভিউ' : 
+                         tab === 'menu' ? 'মেনু' : 
+                         tab === 'riders' ? 'রাইডার' : 
+                         tab === 'orders' ? 'অর্ডারসমূহ' : 
+                         tab === 'payments' ? 'টপ-আপ রিকোয়েস্ট' : 
+                         tab === 'subscriptions' ? 'মেম্বারশিপ' : tab}
                     </button>
                 ))}
             </nav>
@@ -166,22 +192,22 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                 <div className="grid" style={{ gap: '2rem' }}>
                     <section className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
                         <div className="glass-card" style={{ textAlign: 'center', borderColor: 'var(--primary)' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>💰 Total Revenue</p>
+                            <p style={{ color: 'var(--text-muted)' }}>💰 মোট আয়</p>
                             <h2 style={{ color: 'var(--primary)' }}>৳ {totalRevenue.toFixed(2)}</h2>
                         </div>
                         <div className="glass-card" style={{ textAlign: 'center', borderColor: 'var(--secondary)' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>📦 Orders</p>
+                            <p style={{ color: 'var(--text-muted)' }}>📦 মোট অর্ডার</p>
                             <h2 style={{ color: 'var(--secondary)' }}>{totalOrdersCount}</h2>
                         </div>
                         <div className="glass-card" style={{ textAlign: 'center', borderColor: '#8b5cf6' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>👥 Customers</p>
+                            <p style={{ color: 'var(--text-muted)' }}>👥 কাস্টমার</p>
                             <h2 style={{ color: '#a78bfa' }}>{uniqueCustomers}</h2>
                         </div>
                     </section>
 
                     <section className="glass-card">
                         <div className="flex" style={{ justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <h3>📅 Today's Order</h3>
+                            <h3>📅 আজকের অর্ডারসমূহ</h3>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{new Date().toLocaleDateString()}</span>
                         </div>
                         <div className="grid" style={{ gap: '1rem', marginTop: '1rem' }}>
@@ -191,7 +217,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                     return isToday && o.status !== 'Delivered';
                                 })
                                 .length === 0 ? (
-                                <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No pending orders for today! ✨</p>
+                                <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>আজকের জন্য কোনো পেন্ডিং অর্ডার নেই! ✨</p>
                             ) : (
                                 filteredOrders
                                     .filter(o => {
@@ -232,28 +258,28 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             {activeTab === 'menu' && (
                 <div className="grid" style={{ gap: '2rem' }}>
                     <section className="glass-card">
-                        <h3>➕ Add New Item</h3>
+                        <h3>➕ নতুন খাবার যোগ করুন</h3>
                         <form onSubmit={addDish} className="grid" style={{ gridTemplateColumns: '1fr 100px 150px 50px 120px', gap: '1rem', marginTop: '1.5rem' }}>
-                            <input type="text" placeholder="Dish Name" value={itemName} onChange={e => setItemName(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
-                            <input type="number" placeholder="Price" value={itemPrice} onChange={e => setItemPrice(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
+                            <input type="text" placeholder="খাবারের নাম" value={itemName} onChange={e => setItemName(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
+                            <input type="number" placeholder="মূল্য" value={itemPrice} onChange={e => setItemPrice(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
                             <select value={itemCategory} onChange={e => setItemCategory(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }}>
-                                <option value="lunch">Lunch</option>
-                                <option value="dinner">Dinner</option>
+                                <option value="lunch">লাঞ্চ (দুপুর)</option>
+                                <option value="dinner">ডিনার (রাত)</option>
                             </select>
                             <input type="text" value={itemIcon} onChange={e => setItemIcon(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem', textAlign: 'center' }} />
-                            <button type="submit" className="btn-primary">Add Dish</button>
+                            <button type="submit" className="btn-primary">খাবার যোগ করুন</button>
                         </form>
                     </section>
 
                     <section className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                         {['lunch', 'dinner'].map(cat => (
                             <div key={cat} className="glass-card">
-                                <h3 style={{ textTransform: 'capitalize' }}>{cat} Menu</h3>
+                                <h3 style={{ textTransform: 'capitalize' }}>{cat === 'lunch' ? 'লাঞ্চ' : 'ডিনার'} মেনু</h3>
                                 <div className="grid" style={{ gap: '0.5rem', marginTop: '1rem' }}>
                                     {menu[cat].map(item => (
                                         <div key={item._id || item.id} className="flex" style={{ justifyContent: 'space-between', padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                            <span>{item.icon} {item.name} (₹{item.price})</span>
-                                            <button onClick={() => removeDish(item._id || item.id, cat)} style={{ color: '#ef4444', background: 'none' }}>Remove</button>
+                                            <span>{item.icon} {item.name} (৳{item.price})</span>
+                                            <button onClick={() => removeDish(item._id || item.id, cat)} style={{ color: '#ef4444', background: 'none' }}>মুছে ফেলুন</button>
                                         </div>
                                     ))}
                                 </div>
@@ -267,16 +293,16 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                 <section className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                     <div className="glass-card">
                         <div className="flex" style={{ justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <h3>🛵 Riders</h3>
+                            <h3>🛵 রাইডার তালিকা</h3>
                             <form onSubmit={addRider} className="flex" style={{ gap: '0.5rem' }}>
                                 <input
                                     type="text"
-                                    placeholder="New Rider Name"
+                                    placeholder="রাইডারের নাম"
                                     value={newRiderName}
                                     onChange={e => setNewRiderName(e.target.value)}
                                     style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.4rem', borderRadius: '4px', fontSize: '0.8rem' }}
                                 />
-                                <button type="submit" className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Add</button>
+                                <button type="submit" className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>যোগ করুন</button>
                             </form>
                         </div>
                         <div className="grid" style={{ gap: '0.5rem', marginTop: '1rem' }}>
@@ -295,7 +321,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         </div>
                     </div>
                     <div className="glass-card">
-                        <h3>💸 Pay Rider</h3>
+                        <h3>💸 রাইডারকে পেমেন্ট করুন</h3>
                         <form onSubmit={async (e) => {
                             e.preventDefault();
                             if (!selectedRiderForPay || !payAmount) return;
@@ -307,17 +333,17 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                 });
                                 fetchData();
                                 setPayAmount('');
-                                toast.success('Payment recorded! 💸');
+                                toast.success('পেমেন্ট সফল হয়েছে! 💸');
                             } catch (err) {
-                                toast.error('Failed to record payment');
+                                toast.error('পেমেন্ট রেকর্ড করা সম্ভব হয়নি');
                             }
                         }} className="grid" style={{ gap: '1rem', marginTop: '1.5rem' }}>
                             <select value={selectedRiderForPay} onChange={e => setSelectedRiderForPay(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }}>
-                                <option value="">Select Rider</option>
+                                <option value="">রাইডার নির্বাচন করুন</option>
                                 {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
                             </select>
-                            <input type="number" placeholder="Amount" value={payAmount} onChange={e => setPayAmount(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }} />
-                            <button type="submit" className="btn-primary">Record Payment</button>
+                            <input type="number" placeholder="টাকার পরিমাণ" value={payAmount} onChange={e => setPayAmount(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }} />
+                            <button type="submit" className="btn-primary">পেমেন্ট নিশ্চিত করুন</button>
                         </form>
                     </div>
                 </section>
@@ -327,22 +353,22 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 
             {activeTab === 'payments' && (
                 <section className="glass-card">
-                    <h3>🏦 bKash TopUp Requests</h3>
+                    <h3>🏦 বিকাশ টপ-আপ রিকোয়েস্ট</h3>
                     <div style={{ overflowX: 'auto', marginTop: '1.5rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)' }}>
-                                    <th style={{ padding: '0.8rem' }}>Date/Time</th>
-                                    <th style={{ padding: '0.8rem' }}>Customer</th>
-                                    <th style={{ padding: '0.8rem' }}>Amount</th>
-                                    <th style={{ padding: '0.8rem' }}>Sender Number</th>
-                                    <th style={{ padding: '0.8rem' }}>Screenshot</th>
-                                    <th style={{ padding: '0.8rem' }}>Action</th>
+                                    <th style={{ padding: '0.8rem' }}>তারিখ/সময়</th>
+                                    <th style={{ padding: '0.8rem' }}>কাস্টমার</th>
+                                    <th style={{ padding: '0.8rem' }}>পরিমাণ</th>
+                                    <th style={{ padding: '0.8rem' }}>প্রেরক নম্বর</th>
+                                    <th style={{ padding: '0.8rem' }}>প্রমাণ (Screenshot)</th>
+                                    <th style={{ padding: '0.8rem' }}>অ্যাকশন</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {topUpRequests.length === 0 && (
-                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No top-up requests found.</td></tr>
+                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>কোনো টপ-আপ রিকোয়েস্ট পাওয়া যায়নি।</td></tr>
                                 )}
                                 {topUpRequests.map(req => {
                                     return (
@@ -362,8 +388,8 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                             <td style={{ padding: '0.8rem' }}>
                                                 {req.status === 'Pending' ? (
                                                     <div className="flex" style={{ gap: '0.5rem' }}>
-                                                        <button onClick={() => handleApproveTopUp(req)} className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Received</button>
-                                                        <button onClick={() => handleRejectTopUp(req._id || req.id)} style={{ background: 'none', color: '#ef4444', border: '1px solid #ef4444', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.8rem' }}>Reject</button>
+                                                        <button onClick={() => handleApproveTopUp(req)} className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>গ্রহণ করুন</button>
+                                                        <button onClick={() => handleRejectTopUp(req._id || req.id)} style={{ background: 'none', color: '#ef4444', border: '1px solid #ef4444', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.8rem' }}>প্রত্যাখ্যান</button>
                                                     </div>
                                                 ) : (
                                                     <span style={{
@@ -373,13 +399,81 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                                         background: req.status === 'Approved' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
                                                         color: req.status === 'Approved' ? '#10b981' : '#ef4444'
                                                     }}>
-                                                        {req.status}
+                                                        {req.status === 'Approved' ? 'অনুমোদিত' : 'প্রত্যাখ্যাত'}
                                                     </span>
                                                 )}
                                             </td>
                                         </tr>
                                     );
                                 })}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            )}
+
+            {activeTab === 'subscriptions' && (
+                <section className="glass-card">
+                    <div className="flex" style={{ justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                        <h3>💎 মেম্বারশিপ রিকোয়েস্ট</h3>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{subscriptionRequests.length}টি রিকোয়েস্ট পাওয়া গেছে</span>
+                    </div>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)' }}>
+                                    <th style={{ padding: '0.8rem' }}>তারিখ</th>
+                                    <th style={{ padding: '0.8rem' }}>কাস্টমার</th>
+                                    <th style={{ padding: '0.8rem' }}>ফোন</th>
+                                    <th style={{ padding: '0.8rem' }}>প্যাকেজ</th>
+                                    <th style={{ padding: '0.8rem' }}>স্ট্যাটাস</th>
+                                    <th style={{ padding: '0.8rem' }}>অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {subscriptionRequests.length === 0 && (
+                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>এখনো কোনো মেম্বারশিপ রিকোয়েস্ট নেই।</td></tr>
+                                )}
+                                {subscriptionRequests.map(req => (
+                                    <tr key={req._id || req.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                        <td style={{ padding: '0.8rem', fontSize: '0.85rem' }}>{new Date(req.timestamp).toLocaleDateString()}</td>
+                                        <td style={{ padding: '0.8rem', fontWeight: 'bold' }}>{req.name}</td>
+                                        <td style={{ padding: '0.8rem' }}>{req.phone}</td>
+                                        <td style={{ padding: '0.8rem' }}>
+                                            <span style={{ 
+                                                padding: '0.2rem 0.6rem', 
+                                                borderRadius: '4px', 
+                                                fontSize: '0.75rem',
+                                                background: req.package === 'monthly' ? 'rgba(249, 115, 22, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                                                color: req.package === 'monthly' ? 'var(--primary)' : 'var(--secondary)'
+                                            }}>
+                                                {req.package === 'monthly' ? 'মাসিক' : 'সাপ্তাহিক'}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '0.8rem' }}>
+                                            <span style={{
+                                                padding: '0.3rem 0.6rem',
+                                                borderRadius: '4px',
+                                                fontSize: '0.75rem',
+                                                background: req.status === 'Approved' ? 'rgba(16, 185, 129, 0.1)' : req.status === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.05)',
+                                                color: req.status === 'Approved' ? '#10b981' : req.status === 'Rejected' ? '#ef4444' : 'white'
+                                            }}>
+                                                {req.status === 'Approved' ? 'অনুমোদিত' : req.status === 'Rejected' ? 'প্রত্যাখ্যাত' : 'পেন্ডিং'}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '0.8rem' }}>
+                                            <div className="flex" style={{ gap: '0.5rem' }}>
+                                                {req.status === 'Pending' && (
+                                                    <>
+                                                        <button onClick={() => handleUpdateSubscriptionStatus(req._id || req.id, 'Approved')} className="btn-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}>Approve</button>
+                                                        <button onClick={() => handleUpdateSubscriptionStatus(req._id || req.id, 'Rejected')} style={{ background: 'none', color: '#ef4444', border: '1px solid #ef4444', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem' }}>Reject</button>
+                                                    </>
+                                                )}
+                                                <button onClick={() => handleDeleteSubscription(req._id || req.id)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>🗑️</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -407,9 +501,9 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
         <section className="glass-card">
             <div className="flex" style={{ justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'flex-end' }}>
                 <div>
-                    <h3>📦 Order History</h3>
+                    <h3>📦 অর্ডার হিস্ট্রি</h3>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                        Showing {filteredOrders.length > 0 ? startIndex + 1 : 0}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredOrders.length)} of {filteredOrders.length} records
+                        মোট {filteredOrders.length}টি রেকর্ডের মধ্যে {filteredOrders.length > 0 ? startIndex + 1 : 0}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredOrders.length)}টি দেখানো হচ্ছে
                     </p>
                 </div>
             </div>
@@ -418,11 +512,11 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
                     <thead>
                         <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)' }}>
-                            <th style={{ padding: '0.8rem' }}>Date/Time</th>
-                            <th style={{ padding: '0.8rem' }}>Customer</th>
-                            <th style={{ padding: '0.8rem' }}>Details</th>
-                            <th style={{ padding: '0.8rem' }}>Rider / Proof</th>
-                            <th style={{ padding: '0.8rem' }}>Total</th>
+                            <th style={{ padding: '0.8rem' }}>তারিখ/সময়</th>
+                            <th style={{ padding: '0.8rem' }}>কাস্টমার</th>
+                            <th style={{ padding: '0.8rem' }}>বিবরণ</th>
+                            <th style={{ padding: '0.8rem' }}>রাইডার / প্রমাণ</th>
+                            <th style={{ padding: '0.8rem' }}>মোট টাকা</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -437,25 +531,25 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
                                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.customerPhone}</div>
                                 </td>
                                 <td style={{ padding: '0.8rem' }}>
-                                    <div style={{ fontWeight: '600', fontSize: '0.8rem' }}>{order.type.toUpperCase()}</div>
+                                    <div style={{ fontWeight: '600', fontSize: '0.8rem' }}>{order.type === 'lunch' ? 'লাঞ্চ' : 'ডিনার'}</div>
                                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.items.join(', ')}</div>
                                 </td>
                                 <td style={{ padding: '0.8rem' }}>
                                     <div className="flex" style={{ gap: '0.5rem', alignItems: 'center' }}>
                                         <span style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', background: order.status === 'Delivered' ? 'var(--primary)' : 'var(--secondary)' }}>
-                                            {order.status || 'Paid'}
+                                            {order.status === 'Delivered' ? 'ডেলিভারড' : order.status === 'Assigned' ? 'রাইডার নির্ধারিত' : 'প্রক্রিয়াধীন'}
                                         </span>
                                         {order.assignedRider && <span style={{ fontSize: '0.75rem', color: 'var(--primary)' }}>👤 {order.assignedRider}</span>}
                                         {order.deliveryProof && <button onClick={() => setViewProof(order.deliveryProof)} style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}>🖼️ Proof</button>}
                                         {!order.assignedRider && (
                                             <select onChange={e => assignRider(order._id || order.id, e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.7rem' }}>
-                                                <option value="">Assign</option>
+                                                <option value="">নির্ধারণ</option>
                                                 {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
                                             </select>
                                         )}
                                     </div>
                                 </td>
-                                <td style={{ padding: '0.8rem', fontWeight: 'bold' }}>₹ {order.total}</td>
+                                <td style={{ padding: '0.8rem', fontWeight: 'bold' }}>৳ {order.total}</td>
                             </tr>
                         ))}
                     </tbody>

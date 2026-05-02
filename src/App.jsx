@@ -25,7 +25,7 @@ const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balan
     {showTopUpModal && <TopUpModal onClose={() => setShowTopUpModal(false)} onSubmit={handleTopUpRequest} />}
     <header className="flex" style={{ justifyContent: 'space-between', marginBottom: '3rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.5rem' }}>Food <span style={{ color: 'var(--primary)' }}>Catering</span></h1>
+        <h1 style={{ fontSize: '2.5rem' }}>ফুড ক্যাটারিং <span style={{ color: 'var(--primary)' }}>বরিশাল</span></h1>
         <p style={{ color: 'var(--text-muted)' }}>
           Welcome, <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.name}</span> ({title})
         </p>
@@ -66,16 +66,18 @@ const AppContent = () => {
   const [orderHistory, setOrderHistory] = useState([]);
   const [payments, setPayments] = useState([]);
   const [topUpRequests, setTopUpRequests] = useState([]);
+  const [subscriptionRequests, setSubscriptionRequests] = useState([]);
   const [showTopUpModal, setShowTopUpModal] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
-      const [menuRes, ordersRes, topUpRes, ridersRes, paymentsRes] = await Promise.all([
+      const [menuRes, ordersRes, topUpRes, ridersRes, paymentsRes, subsRes] = await Promise.all([
         axios.get(`${API_BASE}/menu`),
         axios.get(`${API_BASE}/orders`),
         axios.get(`${API_BASE}/topup`),
         axios.get(`${API_BASE}/riders`),
-        axios.get(`${API_BASE}/payments`)
+        axios.get(`${API_BASE}/payments`),
+        axios.get(`${API_BASE}/subscriptions`)
       ]);
       setMenu({
         lunch: menuRes.data.lunch,
@@ -85,6 +87,7 @@ const AppContent = () => {
       setOrderHistory(ordersRes.data);
       setTopUpRequests(topUpRes.data);
       setPayments(paymentsRes.data);
+      setSubscriptionRequests(subsRes.data);
     } catch (err) {
       console.error('Failed to fetch data:', err);
     }
@@ -198,7 +201,7 @@ const AppContent = () => {
       <Route path="/admin" element={
         <ProtectedRoute user={user} allowedRole="admin">
           <DashboardLayout title="Admin" user={user} handleLogout={handleLogout} showTopUpModal={showTopUpModal} setShowTopUpModal={setShowTopUpModal} handleTopUpRequest={handleTopUpRequest}>
-            <AdminDashboard menu={menu} setMenu={setMenu} orderHistory={orderHistory} setOrderHistory={setOrderHistory} payments={payments} setPayments={setPayments} topUpRequests={topUpRequests} setTopUpRequests={setTopUpRequests} fetchData={fetchData} />
+            <AdminDashboard menu={menu} setMenu={setMenu} orderHistory={orderHistory} setOrderHistory={setOrderHistory} payments={payments} setPayments={setPayments} topUpRequests={topUpRequests} setTopUpRequests={setTopUpRequests} subscriptionRequests={subscriptionRequests} setSubscriptionRequests={setSubscriptionRequests} fetchData={fetchData} />
           </DashboardLayout>
         </ProtectedRoute>
       } />

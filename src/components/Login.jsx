@@ -58,13 +58,13 @@ const Login = ({ onLogin }) => {
     return (
         <div className="flex" style={{ height: '80vh', justifyContent: 'center', alignItems: 'center' }}>
             <div className="glass-card animate-fade-in" style={{ width: '400px', textAlign: 'center' }}>
-                <h1 style={{ marginBottom: '0.5rem' }}>Welcome to <span style={{ color: 'var(--primary)' }}>Food Catering</span></h1>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Please enter your name to continue</p>
+                <h1 style={{ marginBottom: '0.5rem', fontSize: '2rem' }}><span style={{ color: 'var(--primary)' }}>ফুড ক্যাটারিং বরিশালে</span> স্বাগতম</h1>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>চালিয়ে যেতে আপনার নাম লিখুন</p>
 
                 <form onSubmit={handleSubmit} className="grid" style={{ gap: '1.5rem' }}>
                     <input
                         type="text"
-                        placeholder="Username (Lamia, Admin, or Tisa)"
+                        placeholder="আপনার নাম লিখুন (উদা: Admin, Lamia, বা Tisa)"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={isLoading}
@@ -79,12 +79,10 @@ const Login = ({ onLogin }) => {
                         }}
                     />
                     <button type="submit" className="btn-primary" style={{ padding: '1rem' }} disabled={isLoading}>
-                        {isLoading ? 'Connecting...' : 'Login / Continue'}
+                        {isLoading ? 'সংযুক্ত হচ্ছে...' : 'লগইন / প্রবেশ করুন'}
                     </button>
                 </form>
-                <p style={{ marginTop: '1.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Tip: Log in as 'Admin' to manage riders and menu.
-                </p>
+
             </div>
         </div>
     );

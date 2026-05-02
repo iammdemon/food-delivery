@@ -92,30 +92,30 @@ const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fet
             {/* Earnings Summary Card */}
             <section className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
                 <div className="glass-card" style={{ textAlign: 'center', borderColor: 'var(--primary)' }}>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>💰 Total Earned</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>💰 মোট আয়</p>
                     <h2 style={{ color: 'var(--primary)', margin: '0.5rem 0' }}>৳ {totalEarned}</h2>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{deliveredOrders.length} deliveries x 30tk</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{deliveredOrders.length}টি ডেলিভারি x ৩০টাকা</p>
                 </div>
                 <div className="glass-card" style={{ textAlign: 'center', borderColor: '#ef4444' }}>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>💸 Already Paid</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>💸 অলরেডি পেইড</p>
                     <h2 style={{ color: '#ef4444', margin: '0.5rem 0' }}>৳ {totalPaid}</h2>
                 </div>
                 <div className="glass-card" style={{ textAlign: 'center', borderColor: 'var(--secondary)' }}>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>⏳ Pending Payment</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>⏳ বকেয়া পেমেন্ট</p>
                     <h2 style={{ color: 'var(--secondary)', margin: '0.5rem 0' }}>৳ {pendingBalance}</h2>
                 </div>
             </section>
 
             <header className="glass-card" style={{ borderColor: 'var(--primary)' }}>
-                <h2>🚚 My Assigned Deliveries</h2>
-                <p style={{ color: 'var(--text-muted)' }}>Upload photos to complete deliveries</p>
+                <h2>🚚 আমার নির্ধারিত ডেলিভারি</h2>
+                <p style={{ color: 'var(--text-muted)' }}>ডেলিভারি সম্পন্ন করতে ছবি আপলোড করুন</p>
             </header>
 
             <section className="grid" style={{ gap: '1.5rem' }}>
                 {assignedOrders.length === 0 && (
                     <div className="glass-card" style={{ textAlign: 'center', padding: '3rem' }}>
                         <span style={{ fontSize: '3rem' }}>📭</span>
-                        <h3>No orders assigned yet.</h3>
+                        <h3>এখনো কোনো অর্ডার নির্ধারিত হয়নি।</h3>
                     </div>
                 )}
 
@@ -133,28 +133,28 @@ const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fet
                                         color: 'white',
                                         fontWeight: 'bold'
                                     }}>
-                                        {(order.status || 'Paid').toUpperCase()}
+                                        {order.status === 'Delivered' ? 'ডেলিভারড' : 'পেইড'}
                                     </span>
                                     <span style={{ marginLeft: '1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                                         {order.date} {order.time}
                                     </span>
                                 </div>
-                                <h3 style={{ color: 'var(--secondary)' }}>Bill: ৳ {order.total}</h3>
+                                <h3 style={{ color: 'var(--secondary)' }}>বিল: ৳ {order.total}</h3>
                             </div>
 
                             <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                                 <div>
-                                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>👤 Customer Details</h4>
+                                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>👤 কাস্টমার ডিটেইলস</h4>
                                     <p style={{ fontWeight: 'bold' }}>{order.customerName}</p>
                                     <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>📞 {order.customerPhone}</p>
                                     <div style={{ marginTop: '1rem' }}>
-                                        <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>📍 Delivery Address</h4>
+                                        <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>📍 ডেলিভারি ঠিকানা</h4>
                                         <p style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>{order.customerAddress}</p>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>📸 Delivery Proof</h4>
+                                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>📸 ডেলিভারি প্রুফ</h4>
                                     {order.status === 'Delivered' ? (
                                         <div style={{ position: 'relative', width: '100%', height: '150px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
                                             <img src={order.deliveryProof} alt="Proof" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -219,7 +219,7 @@ const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fet
                                                         cursor: isCompleting[orderId] ? 'wait' : 'pointer'
                                                     }}
                                                 >
-                                                    {isCompleting[orderId] ? 'Completing Delivery...' : 'Complete Delivery ✅'}
+                                                    {isCompleting[orderId] ? 'ডেলিভারি সম্পন্ন হচ্ছে...' : 'ডেলিভারি সম্পন্ন করুন ✅'}
                                                 </button>
                                             )}
                                         </div>

@@ -63,11 +63,11 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
         <div className="animate-fade-in grid" style={{ gap: '2rem' }}>
             <header className="flex" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                    <h2 style={{ fontSize: '2rem' }}>👨‍🍳 Kitchen Dashboard</h2>
-                    <p style={{ color: 'var(--text-muted)' }}>Mange today's preparation and delivery status</p>
+                    <h2 style={{ fontSize: '2rem' }}>👨‍🍳 কিচেন ড্যাশবোর্ড</h2>
+                    <p style={{ color: 'var(--text-muted)' }}>আজকের খাবারের প্রস্তুতি এবং ডেলিভারি স্ট্যাটাস পরিচালনা করুন</p>
                 </div>
                 <div className="glass-card" style={{ padding: '0.5rem 1rem' }}>
-                    <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>{todaysOrders.length} Total Orders Today</span>
+                    <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>আজকের মোট অর্ডার: {todaysOrders.length}টি</span>
                 </div>
             </header>
 
@@ -75,7 +75,7 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
                 {/* Pending Confirmation */}
                 <section className="glass-card" style={{ height: '100%' }}>
                     <h3 style={{ color: 'var(--secondary)', marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        📥 New Orders
+                        📥 নতুন অর্ডারসমূহ
                         <span style={{ fontSize: '0.8rem', background: 'var(--secondary)', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '10px' }}>{pendingOrders.length}</span>
                     </h3>
                     <div className="grid" style={{ gap: '1rem' }}>
@@ -92,7 +92,7 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
                                     onClick={() => updateStatus(order._id || order.id, 'Confirmed')}
                                     disabled={updatingId === (order._id || order.id)}
                                 >
-                                    Confirm Order
+                                    অর্ডার কনফার্ম করুন
                                 </button>
                             </div>
                         ))}
@@ -103,7 +103,7 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
                 {['Confirmed', 'Preparing', 'Sent For Delivery'].map(status => (
                     <section key={status} className="glass-card" style={{ height: '100%' }}>
                         <h3 style={{ color: 'var(--primary)', marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            {status === 'Confirmed' ? '✅' : status === 'Preparing' ? '🍳' : '🚚'} {status}
+                            {status === 'Confirmed' ? '✅' : status === 'Preparing' ? '🍳' : '🚚'} {status === 'Confirmed' ? 'নিশ্চিত' : status === 'Preparing' ? 'প্রস্তুত হচ্ছে' : 'ডেলিভারিতে পাঠানো হয়েছে'}
                             <span style={{ fontSize: '0.8rem', background: 'var(--primary)', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '10px' }}>{groupedOrders[status].length}</span>
                         </h3>
                         <div className="grid" style={{ gap: '1rem' }}>
@@ -123,7 +123,7 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
                                                 onClick={() => updateStatus(order._id || order.id, nextStatus)}
                                                 disabled={updatingId === (order._id || order.id)}
                                             >
-                                                Move to {nextStatus}
+                                                {nextStatus === 'Preparing' ? 'প্রস্তুতি শুরু করুন' : nextStatus === 'Sent For Delivery' ? 'ডেলিভারিতে পাঠান' : nextStatus === 'Delivered' ? 'ডেলিভারি সম্পন্ন' : nextStatus}
                                             </button>
                                         ))}
                                     </div>

@@ -67,7 +67,7 @@ const seedDB = async () => {
                 type: 'dinner',
                 items: ['Fish Curry', 'Potato Vorta'],
                 total: 130,
-                status: 'Pending',
+                status: 'Paid',
                 timestamp: Date.now()
             }
         ];

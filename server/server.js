@@ -35,6 +35,7 @@ import Menu from './models/Menu.js';
 import Order from './models/Order.js';
 import TopUpRequest from './models/TopUpRequest.js';
 import Payment from './models/Payment.js';
+import SubscriptionRequest from './models/SubscriptionRequest.js';
 
 // Connect to MongoDB (Serverless Optimized)
 let cachedConnection = null;
@@ -298,6 +299,48 @@ app.post('/api/payments', async (req, res) => {
         res.json(newPayment);
     } catch (err) {
         console.error('Add Payment Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 7. Subscription Request Routes
+app.get('/api/subscriptions', async (req, res) => {
+    try {
+        const requests = await SubscriptionRequest.find().sort({ timestamp: -1 });
+        res.json(requests);
+    } catch (err) {
+        console.error('Get Subscriptions Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/subscriptions', async (req, res) => {
+    try {
+        const newRequest = new SubscriptionRequest(req.body);
+        await newRequest.save();
+        res.json(newRequest);
+    } catch (err) {
+        console.error('Add Subscription Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.patch('/api/subscriptions/:id', async (req, res) => {
+    try {
+        const updatedRequest = await SubscriptionRequest.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedRequest);
+    } catch (err) {
+        console.error('Update Subscription Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/subscriptions/:id', async (req, res) => {
+    try {
+        await SubscriptionRequest.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete Subscription Error:', err);
         res.status(500).json({ error: err.message });
     }
 });

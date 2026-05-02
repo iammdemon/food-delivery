@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import toast from '../utils/toast';
+import API_BASE from '../api';
 
 const LandingPage = ({ onLoginClick }) => {
     const [formData, setFormData] = useState({
@@ -8,6 +10,10 @@ const LandingPage = ({ onLoginClick }) => {
         package: 'monthly'
     });
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        document.title = "ফুড ক্যাটারিং বরিশাল";
+    }, []);
 
     // Lock scroll when modal is open
     useEffect(() => {
@@ -39,10 +45,22 @@ const LandingPage = ({ onLoginClick }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        toast.success(`ধন্যবাদ ${formData.name}! আপনার ${formData.package === 'monthly' ? 'মাসিক' : 'সাপ্তাহিক'} প্যাকেজের অনুরোধটি গ্রহণ করা হয়েছে। আমরা শীঘ্রই যোগাযোগ করবো।`);
-        setShowModal(false);
+        try {
+            const response = await axios.post(`${API_BASE}/subscriptions`, formData);
+
+            if (response.status === 200 || response.status === 201) {
+                toast.success(`ধন্যবাদ ${formData.name}! আপনার ${formData.package === 'monthly' ? 'মাসিক' : 'সাপ্তাহিক'} প্যাকেজের অনুরোধটি গ্রহণ করা হয়েছে। আমরা শীঘ্রই যোগাযোগ করবো।`);
+                setShowModal(false);
+                setFormData({ name: '', phone: '', package: 'monthly' });
+            } else {
+                toast.error('দুঃখিত, অনুরোধটি পাঠানো সম্ভব হয়নি। আবার চেষ্টা করুন।');
+            }
+        } catch (err) {
+            console.error('Subscription Error:', err);
+            toast.error('সার্ভারের সাথে সংযোগ বিচ্ছিন্ন হয়েছে।');
+        }
     };
 
     const openModal = (pkg = 'monthly') => {
@@ -54,10 +72,10 @@ const LandingPage = ({ onLoginClick }) => {
         <>
             {/* Page Content - Wrapped in transformation container */}
             <div className="landing-page animate-fade-in" style={{
-                color: '#1e293b',
-                background: '#ffffff',
+                color: 'var(--text-main)',
+                background: 'var(--charcoal)',
                 minHeight: '100vh',
-                fontFamily: "'Hind Siliguri', sans-serif"
+                fontFamily: "'Inter', sans-serif"
             }}>
                 {/* 1. Navigation Header */}
                 <nav style={{
@@ -68,21 +86,22 @@ const LandingPage = ({ onLoginClick }) => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '1rem 8%',
-                    background: 'rgba(255,255,255,0.85)',
-                    backdropFilter: 'blur(15px)',
+                    padding: '1.2rem 8%',
+                    background: 'rgba(11, 17, 26, 0.8)',
+                    backdropFilter: 'blur(20px)',
                     zIndex: 1000,
-                    borderBottom: '1px solid rgba(0,0,0,0.05)'
+                    borderBottom: '1px solid rgba(255,255,255,0.05)'
                 }}>
-                    <div style={{ fontSize: '1.6rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
-                        <span style={{ fontSize: '2.2rem' }}>🍱</span>
-                        <span>ফুড <span style={{ color: '#0f172a' }}>ক্যাটারিং</span> সার্ভিস</span>
+                    <div style={{ fontSize: '1.8rem', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--primary)', fontFamily: "'Poppins', sans-serif" }}>
+                        <span style={{ filter: 'drop-shadow(0 0 10px rgba(249, 115, 22, 0.4))' }}>🍱</span>
+                        <span style={{ letterSpacing: '-0.03em' }}>ফুড ক্যাটারিং <span style={{ color: 'white' }}>বরিশাল</span></span>
                     </div>
-                    <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                        <a href="#how-it-works" style={{ textDecoration: 'none', color: '#475569', fontWeight: '600' }}>কিভাবে কাজ করে</a>
-                        <a href="#packages" style={{ textDecoration: 'none', color: '#475569', fontWeight: '600' }}>প্যাকেজসমূহ</a>
-                        <button onClick={onLoginClick} className="btn-primary" style={{ padding: '0.7rem 2rem', borderRadius: '50px', fontSize: '1rem', fontWeight: '700' }}>
-                            লগইন করুন
+                    <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }}>
+                        <a href="#how-it-works" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>প্রক্রিয়া</a>
+                        <a href="#menu" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>মেনু</a>
+                        <a href="#packages" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>প্যাকেজ</a>
+                        <button onClick={onLoginClick} className="btn-primary" style={{ padding: '0.8rem 2.2rem', fontSize: '0.95rem' }}>
+                            লগইন
                         </button>
                     </div>
                 </nav>
@@ -95,94 +114,113 @@ const LandingPage = ({ onLoginClick }) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     textAlign: 'center',
-                    background: 'linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)), url("https://images.unsplash.com/photo-1589302168068-964664d93dc0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80")',
+                    background: 'linear-gradient(rgba(2, 6, 23, 0.7), rgba(2, 6, 23, 0.8)), url("/images/hero.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed',
                     padding: '120px 2rem 50px'
                 }}>
-                    <div style={{
-                        background: 'rgba(255,255,255,0.92)',
-                        padding: '4rem',
-                        borderRadius: '40px',
-                        boxShadow: '0 30px 60px rgba(0,0,0,0.12)',
-                        backdropFilter: 'blur(10px)',
-                        maxWidth: '1000px',
-                        width: '100%',
-                        border: '1px solid rgba(255,255,255,0.5)'
-                    }}>
+                    <div style={{ maxWidth: '1100px', width: '100%' }}>
                         <div style={{
-                            display: 'inline-block',
-                            padding: '0.5rem 1.5rem',
-                            background: 'rgba(5, 150, 105, 0.1)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.6rem',
+                            padding: '0.6rem 1.4rem',
+                            background: 'rgba(249, 115, 22, 0.1)',
+                            border: '1px solid rgba(249, 115, 22, 0.2)',
                             color: 'var(--primary)',
                             borderRadius: '50px',
-                            fontWeight: '700',
-                            marginBottom: '1.5rem',
-                            fontSize: '1rem'
+                            fontWeight: '600',
+                            marginBottom: '2rem',
+                            fontSize: '0.9rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em'
                         }}>
-                            ✨ আপনার ঘরের স্বাদের নিশ্চয়তা
+                            <span>🏠</span> প্রতিদিন ঘরে তৈরি খাবারের স্বাদ
                         </div>
-                        <h1 style={{ fontSize: '4rem', marginBottom: '1.5rem', color: '#0f172a', lineHeight: '1.1', fontWeight: '900' }}>
-                            শহরের সেরা <span style={{ color: 'var(--primary)' }}>খাবার</span> <br /> এখন আপনার দরজায়
+                        <h1 style={{ 
+                            fontSize: 'clamp(3rem, 8vw, 5.5rem)', 
+                            marginBottom: '1.5rem', 
+                            color: 'white', 
+                            lineHeight: '1.05', 
+                            fontWeight: '900', 
+                            fontFamily: "'Poppins', sans-serif",
+                            letterSpacing: '-0.04em'
+                        }}>
+                            <span style={{ color: 'var(--primary)' }}>ফুড ক্যাটারিং বরিশাল</span> <br />
+                            রান্নার ঝামেলা <span style={{ 
+                                background: 'linear-gradient(to right, #F97316, #F59E0B)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent'
+                            }}>বিদায়</span> করুন
                         </h1>
-                        <p style={{ fontSize: '1.5rem', color: '#475569', marginBottom: '2.5rem', lineHeight: '1.6', maxWidth: '800px', margin: '0 auto 2.5rem' }}>
-                            আমরা প্রতিদিন স্বাস্থ্যকর এবং ঘরোয়া স্বাদের দুপুরের ও রাতের খাবার সরবরাহ করি। আপনার ব্যস্ত জীবনে পুষ্টিকর খাবারের দুশ্চিন্তা ছাড়ুন আমাদের ওপর।
+                        <p style={{ 
+                            fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', 
+                            color: 'var(--text-muted)', 
+                            marginBottom: '3.5rem', 
+                            lineHeight: '1.6', 
+                            maxWidth: '850px', 
+                            margin: '0 auto 3.5rem' 
+                        }}>
+                            অফিসগামী বা শিক্ষার্থীদের জন্য সেরা মান্থলি মিল ক্যাটারিং। বাজারের চিন্তা আর রান্নার ক্লান্তি ছাড়াই 
+                            উপভোগ করুন স্বাস্থ্যসম্মত ও সাশ্রয়ী ঘরোয়া খাবার।
                         </p>
 
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
-                            <button onClick={() => openModal()} className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.3rem', borderRadius: '50px', fontWeight: '800', boxShadow: '0 10px 25px rgba(5, 150, 105, 0.3)' }}>
-                                সাবস্ক্রিপশন প্যাকেজে যুক্ত হন
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                            <button onClick={() => openModal()} className="btn-primary" style={{ padding: '1.3rem 3.5rem', fontSize: '1.1rem', fontWeight: '700' }}>
+                                মেম্বারশিপ শুরু করুন
                             </button>
-                            <button onClick={() => document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' })} className="btn-outline" style={{ padding: '1.2rem 3rem', fontSize: '1.3rem', borderRadius: '50px', fontWeight: '800', background: 'white' }}>
-                                বিস্তারিত জানুন
+                            <button onClick={() => document.getElementById('packages').scrollIntoView({ behavior: 'smooth' })} className="btn-outline" style={{ padding: '1.3rem 3.5rem', fontSize: '1.1rem', fontWeight: '700', backdropFilter: 'blur(10px)' }}>
+                                আমাদের প্ল্যানগুলো দেখুন
                             </button>
                         </div>
                     </div>
                 </header>
 
                 {/* 3. How It Works Section */}
-                <section id="how-it-works" style={{ padding: '8rem 2rem', background: '#ffffff' }}>
+                <section id="how-it-works" style={{ padding: '10rem 2rem', background: 'var(--deep-dark)', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '400px', height: '400px', background: 'rgba(249, 115, 22, 0.05)', filter: 'blur(100px)', borderRadius: '50%' }}></div>
                     <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                            <h2 style={{ fontSize: '3rem', color: '#0f172a', marginBottom: '1.5rem', fontWeight: '800' }}>কিভাবে আমরা কাজ করি?</h2>
-                            <p style={{ color: '#64748b', fontSize: '1.3rem', maxWidth: '700px', margin: '0 auto' }}>খাবার অর্ডার করা এখন অনেক সহজ। মাত্র ৩টি ধাপে পৌঁছে যাবে আপনার প্রিয় খাবার।</p>
+                        <div style={{ textAlign: 'center', marginBottom: '6rem' }}>
+                            <h2 style={{ fontSize: '3.5rem', color: 'white', marginBottom: '1.5rem', fontWeight: '800', fontFamily: "'Poppins', sans-serif" }}>কিভাবে <span style={{ color: 'var(--primary)' }}>কাজ</span> করে?</h2>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>অর্ডার থেকে ডেলিভারি—পুরো প্রক্রিয়াটি একদম সহজ এবং ঝামেলামুক্ত।</p>
                         </div>
 
-                        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', position: 'relative' }}>
                             {[
-                                { step: '০১', title: 'পছন্দ করুন', desc: 'আমাদের প্রতিদিনের ফ্রেশ মেনু থেকে আপনার প্রিয় খাবারটি পছন্দ করুন।', icon: '📱' },
-                                { step: '০২', title: 'অর্ডার করুন', desc: 'সকাল ১০টার মধ্যে আপনার অর্ডারটি কনফার্ম করুন।', icon: '📝' },
-                                { step: '০৩', title: 'ডেলিভারি নিন', desc: 'আমাদের রাইডার আপনার নির্দিষ্ট ঠিকানায় খাবার পৌঁছে দিবে।', icon: '🛵' }
+                                { step: '০১', title: 'প্যাকেজ বাছাই করুন', desc: 'আপনার প্রয়োজন অনুযায়ী সাপ্তাহিক বা মাসিক খাবারের প্যাকেজ সিলেক্ট করুন।', icon: '📦' },
+                                { step: '০২', title: 'অর্ডার নিশ্চিত করুন', desc: 'সহজ পেমেন্ট মেথড ব্যবহার করে আপনার সাবস্ক্রিপশন নিশ্চিত করুন।', icon: '✅' },
+                                { step: '০৩', title: 'গরম খাবার গ্রহণ করুন', desc: 'নির্ধারিত সময়ে আপনার অফিস বা বাসায় পৌঁছে যাবে পুষ্টিকর গরম খাবার।', icon: '🍲' }
                             ].map((item, i) => (
-                                <div key={i} style={{
-                                    padding: '3rem 2rem',
-                                    background: '#f8fafc',
-                                    borderRadius: '30px',
+                                <div key={i} className="glass-card" style={{
+                                    padding: '4rem 2.5rem',
                                     textAlign: 'center',
                                     position: 'relative',
-                                    border: '1px solid #f1f5f9'
+                                    zIndex: 1
                                 }}>
                                     <div style={{
-                                        position: 'absolute',
-                                        top: '-20px',
-                                        left: '50%',
-                                        transform: 'translateX(-50%)',
-                                        width: '60px',
-                                        height: '60px',
-                                        background: 'var(--primary)',
-                                        color: 'white',
-                                        borderRadius: '50%',
+                                        width: '80px',
+                                        height: '80px',
+                                        background: 'rgba(255,255,255,0.03)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: '24px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontSize: '1.5rem',
-                                        fontWeight: '900',
-                                        boxShadow: '0 10px 20px rgba(5, 150, 105, 0.2)'
-                                    }}>{item.step}</div>
-                                    <div style={{ fontSize: '4.5rem', marginBottom: '1.5rem' }}>{item.icon}</div>
-                                    <h3 style={{ fontSize: '1.8rem', color: '#0f172a', marginBottom: '1rem' }}>{item.title}</h3>
-                                    <p style={{ color: '#64748b', fontSize: '1.1rem', lineHeight: '1.6' }}>{item.desc}</p>
+                                        fontSize: '2.5rem',
+                                        margin: '0 auto 2rem',
+                                        boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)'
+                                    }}>{item.icon}</div>
+                                    <div style={{
+                                        fontSize: '0.9rem',
+                                        fontWeight: '800',
+                                        color: 'var(--primary)',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.2em',
+                                        marginBottom: '0.5rem'
+                                    }}>ধাপ {item.step}</div>
+                                    <h3 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '1.2rem', fontWeight: '700' }}>{item.title}</h3>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: '1.7' }}>{item.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -190,40 +228,45 @@ const LandingPage = ({ onLoginClick }) => {
                 </section>
 
                 {/* 4. Menu Preview Section */}
-                <section style={{ padding: '8rem 2rem', background: '#f8fafc' }}>
+                <section id="menu" style={{ padding: '10rem 2rem', background: 'var(--charcoal)' }}>
                     <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4rem' }}>
-                            <div>
-                                <h2 style={{ fontSize: '3rem', color: '#0f172a', marginBottom: '1rem', fontWeight: '800' }}>আমাদের নিয়মিত মেনু</h2>
-                                <p style={{ color: '#64748b', fontSize: '1.2rem' }}>প্রতিদিন আমরা ভিন্ন ভিন্ন ঘরোয়া মেনু সরবরাহ করি।</p>
-                            </div>
-                            <button onClick={() => openModal()} className="btn-outline" style={{ background: 'white', padding: '1rem 2rem' }}>সবগুলো দেখুন</button>
+                        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+                            <h2 style={{ fontSize: '3.5rem', color: 'white', marginBottom: '1.5rem', fontWeight: '800', fontFamily: "'Poppins', sans-serif" }}>জনপ্রিয় <span style={{ color: 'var(--primary)' }}>খাবার</span> সমূহ</h2>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>আমাদের মেম্বারদের পছন্দের তালিকার সেরা কয়েকটি মেনু।</p>
                         </div>
 
-                        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem' }}>
+                        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem' }}>
                             {[
-                                { name: 'চিকেন কারি প্যাকেজ', price: '৳ ১৮০', img: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', tag: 'Lunch' },
-                                { name: 'ফিশ দোপিয়াজা প্যাকেজ', price: '৳ ১৬০', img: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', tag: 'Lunch/Dinner' },
-                                { name: 'চিকেন ভোনা খিচুড়ি', price: '৳ ২২০', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', tag: 'Special' }
+                                { name: 'চিকেন বিরিয়ানি প্ল্যাটার', price: '৳ ২২০', img: '/images/hero.png', tag: 'বেস্ট সেলার', desc: 'সুগন্ধি পোলাও চালের সাথে ঝাল চিকেন এবং ডিমের কম্বো।' },
+                                { name: 'রুই মাছের দোপেঁয়াজা', price: '৳ ১৮০', img: '/images/ilish.png', tag: 'ঘরোয়া স্বাদ', desc: 'তাজা মাছের সাথে আলু-বেগুনের ঝোল এবং সাদা ভাতের প্যাকেজ।' },
+                                { name: 'বিফ কারি লাঞ্চ বক্স', price: '৳ ২৪০', img: '/images/beef.png', tag: 'প্রিমিয়াম', desc: 'গরুর মাংসের সাথে মুগ ডাল এবং গরম ভাতের পরিপূর্ণ লাঞ্চ।' }
                             ].map((item, i) => (
-                                <div key={i} style={{
-                                    background: 'white',
-                                    borderRadius: '32px',
-                                    overflow: 'hidden',
-                                    boxShadow: '0 15px 35px rgba(0,0,0,0.06)',
-                                    transition: 'transform 0.3s'
-                                }}>
-                                    <div style={{ height: '240px', overflow: 'hidden', position: 'relative' }}>
+                                <div key={i} className="glass-card" style={{ padding: '0', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <div className="image-zoom-container" style={{ height: '280px', position: 'relative' }}>
                                         <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        <div style={{ position: 'absolute', top: '20px', left: '20px', background: 'var(--primary)', color: 'white', padding: '0.4rem 1.2rem', borderRadius: '50px', fontWeight: '700', fontSize: '0.9rem' }}>{item.tag}</div>
+                                        <div style={{ 
+                                            position: 'absolute', 
+                                            top: '20px', 
+                                            left: '20px', 
+                                            background: 'rgba(249, 115, 22, 0.9)', 
+                                            backdropFilter: 'blur(10px)',
+                                            color: 'white', 
+                                            padding: '0.5rem 1.5rem', 
+                                            borderRadius: '50px', 
+                                            fontWeight: '700', 
+                                            fontSize: '0.8rem',
+                                            boxShadow: '0 5px 15px rgba(249, 115, 22, 0.3)'
+                                        }}>{item.tag}</div>
                                     </div>
-                                    <div style={{ padding: '2rem' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                                            <h3 style={{ fontSize: '1.5rem', color: '#0f172a', fontWeight: '700' }}>{item.name}</h3>
-                                            <span style={{ color: 'var(--primary)', fontWeight: '900', fontSize: '1.4rem' }}>{item.price}</span>
+                                    <div style={{ padding: '2.5rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                            <h3 style={{ fontSize: '1.6rem', color: 'white', fontWeight: '700', fontFamily: "'Poppins', sans-serif" }}>{item.name}</h3>
+                                            <span style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '1.5rem' }}>{item.price}</span>
                                         </div>
-                                        <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>সালাদ এবং সফট ড্রিংকস সহ পূর্ণাঙ্গ খাবার।</p>
-                                        <button onClick={() => openModal()} style={{ width: '100%', background: '#f1f5f9', color: '#0f172a', padding: '1rem', borderRadius: '16px', fontWeight: '700' }}>অর্ডার করুন</button>
+                                        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.6' }}>{item.desc}</p>
+                                        <button onClick={() => openModal()} className="btn-outline" style={{ width: '100%', padding: '1rem', borderRadius: '16px', fontSize: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            এই খাবারটি বুক করুন
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -232,83 +275,95 @@ const LandingPage = ({ onLoginClick }) => {
                 </section>
 
                 {/* 5. Pricing/Packages Table Section */}
-                <section id="packages" style={{ padding: '8rem 2rem', background: '#fcfcfc' }}>
+                <section id="packages" style={{ padding: '10rem 2rem', background: 'var(--deep-dark)' }}>
                     <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                            <h2 style={{ fontSize: '3rem', color: '#0f172a', marginBottom: '1.5rem', fontWeight: '800' }}>আমাদের সাবস্ক্রিপশন প্ল্যান</h2>
-                            <p style={{ color: '#64748b', fontSize: '1.3rem' }}>নিয়মিত গ্রাহকদের জন্য সাবস্ক্রিপশন প্যাকেজে থাকবে বিশেষ মূল্যছাড়।</p>
+                        <div style={{ textAlign: 'center', marginBottom: '6rem' }}>
+                            <h2 style={{ fontSize: '3.5rem', color: 'white', marginBottom: '1.5rem', fontWeight: '800', fontFamily: "'Poppins', sans-serif" }}>মিল <span style={{ color: 'var(--primary)' }}>সাবস্ক্রিপশন</span></h2>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>সাশ্রয়ী মূল্যে আপনার পছন্দের মান্থলি প্ল্যানটি নির্বাচন করুন।</p>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 450px))', gap: '3rem', justifyContent: 'center' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 450px))', gap: '3rem', justifyContent: 'center', alignItems: 'center' }}>
                             {/* Weekly Plan */}
-                            <div style={{
+                            <div className="glass-card" style={{
                                 padding: '4rem 3rem',
-                                background: 'white',
-                                borderRadius: '40px',
-                                border: '1px solid #e2e8f0',
-                                textAlign: 'center',
-                                position: 'relative'
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                textAlign: 'center'
                             }}>
-                                <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>সাপ্তাহিক প্যাকেজ</h3>
-                                <div style={{ fontSize: '3.5rem', fontWeight: '900', color: '#0f172a', marginBottom: '1rem' }}>৳ ৭০০ <span style={{ fontSize: '1.2rem', color: '#64748b', fontWeight: '400' }}>/ ৭ দিন</span></div>
-                                <ul style={{ listStyle: 'none', padding: 10, textAlign: 'left', marginBottom: '2.5rem' }}>
-                                    {['৭ দিন উন্নত মানের দুপুরের খাবার', 'প্রতিদিন ভিন্ন ভিন্ন মেনু', 'ফ্রী ডেলিভারি', 'সালাদ ও রাইতা সহ'].map((f, i) => (
-                                        <li key={i} style={{ marginBottom: '1rem', fontSize: '1.1rem', color: '#475569' }}>✅ {f}</li>
+                                <h3 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '1rem', fontWeight: '700' }}>সাপ্তাহিক ট্রায়াল</h3>
+                                <div style={{ fontSize: '3.5rem', fontWeight: '900', color: 'white', marginBottom: '1rem', fontFamily: "'Poppins', sans-serif" }}>৳ ১৪০০ <span style={{ fontSize: '1.1rem', color: 'var(--text-muted)', fontWeight: '400' }}>/ সপ্তাহ</span></div>
+                                <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left', marginBottom: '3rem' }}>
+                                    {['৭ দিন ডাবল মিল (লাঞ্চ ও ডিনার)', 'পরিচ্ছন্ন ও স্বাস্থ্যকর প্যাকিং', 'অফিস বা বাসায় ফ্রি ডেলিভারি', 'সাপ্তাহিক মেনু কাস্টমাইজেশন'].map((f, i) => (
+                                        <li key={i} style={{ marginBottom: '1.2rem', fontSize: '1.05rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                                            <span style={{ color: 'var(--primary)' }}>✦</span> {f}
+                                        </li>
                                     ))}
                                 </ul>
-                                <button onClick={() => openModal('weekly')} className="btn-outline" style={{ width: '100%', padding: '1.2rem', background: '#f8fafc' }}>বেছে নিন</button>
+                                <button onClick={() => openModal('weekly')} className="btn-outline" style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem' }}>ট্রায়াল শুরু করুন</button>
                             </div>
 
                             {/* Monthly Plan - Featured */}
-                            <div style={{
-                                padding: '4rem 3rem',
-                                background: 'white',
-                                borderRadius: '40px',
-                                border: '3px solid var(--primary)',
+                            <div className="glass-card orange-glow" style={{
+                                padding: '5rem 3.5rem',
+                                background: 'rgba(249, 115, 22, 0.03)',
+                                border: '2px solid var(--primary)',
                                 textAlign: 'center',
-                                boxShadow: '0 25px 50px rgba(5, 150, 105, 0.1)',
                                 position: 'relative',
                                 transform: 'scale(1.05)',
                                 zIndex: 2
                             }}>
-                                <div style={{ position: 'absolute', top: '20px', right: '20px', background: 'var(--primary)', color: 'white', padding: '0.4rem 1.2rem', borderRadius: '50px', fontWeight: '700', fontSize: '0.9rem' }}>সেরা অফার</div>
-                                <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>মাসিক প্যাকেজ</h3>
-                                <div style={{ fontSize: '3.5rem', fontWeight: '900', color: '#0f172a', marginBottom: '1rem' }}>৳ ২৪০০ <span style={{ fontSize: '1.2rem', color: '#64748b', fontWeight: '400' }}>/ ৩০ দিন</span></div>
-                                <ul style={{ listStyle: 'none', padding: 10, textAlign: 'left', marginBottom: '2.5rem' }}>
-                                    {['৩০ দিন দুপুরের ও রাতের খাবার', 'মেনু পরিবর্তনের বিশেষ সুযোগ', 'ফ্রী সুপারফাস্ট ডেলিভারি', 'প্রতি সপ্তাহে একটি করে ডেজার্ট ফ্রী'].map((f, i) => (
-                                        <li key={i} style={{ marginBottom: '1rem', fontSize: '1.1rem', color: '#475569' }}>✅ {f}</li>
+                                <div style={{ 
+                                    position: 'absolute', 
+                                    top: '-20px', 
+                                    left: '50%', 
+                                    transform: 'translateX(-50%)', 
+                                    background: 'var(--primary)', 
+                                    color: 'white', 
+                                    padding: '0.6rem 2rem', 
+                                    borderRadius: '50px', 
+                                    fontWeight: '800', 
+                                    fontSize: '0.9rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.1em'
+                                }}>সেরা অফার</div>
+                                <h3 style={{ fontSize: '2rem', color: 'white', marginBottom: '1rem', fontWeight: '800' }}>প্রফেশনাল মান্থলি</h3>
+                                <div style={{ fontSize: '4rem', fontWeight: '900', color: 'white', marginBottom: '1rem', fontFamily: "'Poppins', sans-serif" }}>৳ ৫০০০ <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', fontWeight: '400' }}>/ মাস</span></div>
+                                <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left', marginBottom: '3.5rem' }}>
+                                    {['৩০ দিন নিরবচ্ছিন্ন সার্ভিস', 'মাছের ৩টি ও মাংসের ৩টি আইটেম', 'ডাল, সবজি ও সালাদ প্রতিদিন', '২৪/৭ কাস্টমার সাপোর্ট'].map((f, i) => (
+                                        <li key={i} style={{ marginBottom: '1.2rem', fontSize: '1.1rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                                            <span style={{ color: 'var(--primary)' }}>✦</span> {f}
+                                        </li>
                                     ))}
                                 </ul>
-                                <button onClick={() => openModal('monthly')} className="btn-primary" style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem' }}>সাবস্ক্রাইব করুন</button>
+                                <button onClick={() => openModal('monthly')} className="btn-primary" style={{ width: '100%', padding: '1.4rem', fontSize: '1.2rem' }}>সাবস্ক্রিপশন নিন</button>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 {/* 6. FAQ Section */}
-                <section style={{ padding: '8rem 2rem', background: '#ffffff' }}>
-                    <div className="container" style={{ maxWidth: '800px' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                            <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '1rem' }}>সচরাচর জিজ্ঞাসিত প্রশ্ন (FAQ)</h2>
-                            <p style={{ color: '#64748b' }}>আপনার কোনো প্রশ্ন থাকলে নিচের উত্তরগুলো দেখে নিতে পারেন।</p>
+                <section style={{ padding: '10rem 2rem', background: 'var(--charcoal)' }}>
+                    <div className="container" style={{ maxWidth: '900px', margin: '0 auto' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+                            <h2 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', color: 'white' }}>সাধারণ <span style={{ color: 'var(--primary)' }}>জিজ্ঞাসা</span></h2>
+                            <p style={{ color: 'var(--text-muted)' }}>আমাদের ক্যাটারিং সার্ভিস সম্পর্কে বিস্তারিত জানুন।</p>
                         </div>
 
                         <div style={{ display: 'grid', gap: '1.5rem' }}>
                             {[
-                                { q: 'আপনারা কি প্রতিদিন খাবার সরবরাহ করেন?', a: 'হ্যাঁ, শুক্র ও শনিবার সহ সপ্তাহের ৭ দিনই আমরা খাবার সরবরাহ করে থাকি।' },
-                                { q: 'অর্ডারের শেষ সময় কখন?', a: 'দুপুরের খাবারের জন্য সকাল ১০টা এবং রাতের খাবারের জন্য বিকেল ৫টার মধ্যে অর্ডার করতে হবে।' },
-                                { q: 'আমি কি আমার মেনু পরিবর্তন করতে পারি?', a: 'মাসিক গ্রাহকদের জন্য ২৪ ঘণ্টা আগে অবগত করলে মেনু পরিবর্তনের সুবিধা রয়েছে।' },
-                                { q: 'কিভাবে পেমেন্ট করবো?', a: 'আপনি বিকাশ (bKash) অথবা কার্ডের মাধ্যমে খুব সহজেই অ্যাপ থেকে পেমেন্ট করতে পারবেন।' }
+                                { q: 'খাবারের মান কেমন হবে?', a: 'আমরা ১০০% ফ্রেশ এবং অর্গানিক উপাদান ব্যবহার করি। আপনার ঘরের খাবারের মতোই স্বাস্থ্যকর স্বাদ আমরা নিশ্চিত করি।' },
+                                { q: 'ডেলিভারি চার্জ কত?', a: 'আমাদের মান্থলি এবং উইকলি সব প্যাকেজেই ডেলিভারি একদম ফ্রি!' },
+                                { q: 'কোন কারণে মিল অফ রাখা যাবে কি?', a: 'হ্যাঁ, যদি আপনি কোনদিন খাবার না নিতে চান তবে ২৪ ঘণ্টা আগে জানালে সেই মিলটি আপনার একাউন্টে জমা থাকবে।' },
+                                { q: 'মেনু কি প্রতিদিন একই থাকে?', a: 'না, আমরা প্রতিদিন ভিন্ন ভিন্ন স্বাদের মেনু প্রদান করি যাতে আপনি খাবারের একঘেয়েমি থেকে মুক্তি পান।' }
                             ].map((item, i) => (
-                                <details key={i} style={{
-                                    background: '#f8fafc',
-                                    padding: '1.5rem',
-                                    borderRadius: '20px',
-                                    cursor: 'pointer',
-                                    border: '1px solid #f1f5f9'
+                                <details key={i} className="glass-card" style={{
+                                    padding: '1.5rem 2.5rem',
+                                    cursor: 'pointer'
                                 }}>
-                                    <summary style={{ fontSize: '1.2rem', fontWeight: '700', color: '#0f172a' }}>{item.q}</summary>
-                                    <p style={{ marginTop: '1rem', color: '#64748b', lineHeight: '1.6' }}>{item.a}</p>
+                                    <summary style={{ fontSize: '1.2rem', fontWeight: '700', color: 'white', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        {item.q}
+                                        <span style={{ color: 'var(--primary)', fontSize: '1.5rem' }}>+</span>
+                                    </summary>
+                                    <p style={{ marginTop: '1.5rem', color: 'var(--text-muted)', lineHeight: '1.8', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>{item.a}</p>
                                 </details>
                             ))}
                         </div>
@@ -316,42 +371,54 @@ const LandingPage = ({ onLoginClick }) => {
                 </section>
 
                 {/* 7. Footer - Detailed */}
-                <footer style={{ padding: '6rem 2rem 3rem', background: '#0f172a', color: 'white' }}>
+                <footer style={{ padding: '8rem 2rem 4rem', background: 'var(--deep-dark)', color: 'white' }}>
                     <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem', marginBottom: '4rem' }}>
+                        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '5rem', marginBottom: '6rem' }}>
                             <div>
-                                <div style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <span style={{ fontSize: '2.5rem' }}>🍱</span>
-                                    <span>ফুড ক্যাটারিং</span>
+                                <div style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', fontFamily: "'Poppins', sans-serif" }}>
+                                    <span style={{ filter: 'drop-shadow(0 0 10px rgba(249, 115, 22, 0.4))' }}>🍱</span>
+                                    <span style={{ letterSpacing: '-0.03em' }}>প্রিমিয়াম <span style={{ color: 'var(--primary)' }}>ক্যাটারিং</span></span>
                                 </div>
-                                <p style={{ color: '#94a3b8', lineHeight: '1.6', marginBottom: '1.5rem' }}>আমরা আপনার তৃপ্তি এবং স্বাস্থ্যের কথা মাথায় রেখে প্রতিদিন সেরা উপকরণে ঘরোয়া খাবার রান্না করি।</p>
-                                <div className="flex" style={{ gap: '1.5rem' }}>
-                                    <span style={{ fontSize: '1.5rem', cursor: 'pointer' }}>📘</span>
-                                    <span style={{ fontSize: '1.5rem', cursor: 'pointer' }}>📸</span>
-                                    <span style={{ fontSize: '1.5rem', cursor: 'pointer' }}>🐦</span>
+                                <p style={{ color: 'var(--text-muted)', lineHeight: '1.8', marginBottom: '2.5rem', fontSize: '1.05rem' }}>আমরা দিচ্ছি মায়ের হাতের রান্নার স্বাদে সেরা মান্থলি মিল ক্যাটারিং সার্ভিস। সুস্থ থাকুন, ভালো খান।</p>
+                                <div className="flex" style={{ gap: '1.2rem' }}>
+                                    {['📘', '📸', '🐦', '🔗'].map((icon, idx) => (
+                                        <div key={idx} style={{ 
+                                            width: '45px', 
+                                            height: '45px', 
+                                            background: 'rgba(255,255,255,0.03)', 
+                                            borderRadius: '12px', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center', 
+                                            fontSize: '1.2rem', 
+                                            cursor: 'pointer',
+                                            border: '1px solid rgba(255,255,255,0.05)',
+                                            transition: 'var(--transition)'
+                                        }} onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(249, 115, 22, 0.2)'; }} onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}>{icon}</div>
+                                    ))}
                                 </div>
                             </div>
                             <div>
-                                <h4 style={{ fontSize: '1.3rem', marginBottom: '1.5rem' }}>লিঙ্কসমূহ</h4>
-                                <ul style={{ listStyle: 'none', padding: 0, color: '#94a3b8' }}>
-                                    <li style={{ marginBottom: '0.8rem', cursor: 'pointer' }}>হোম</li>
-                                    <li style={{ marginBottom: '0.8rem', cursor: 'pointer' }}>প্যাকেজসমূহ</li>
-                                    <li style={{ marginBottom: '0.8rem', cursor: 'pointer' }}>কিভাবে কাজ করে</li>
-                                    <li style={{ marginBottom: '0.8rem', cursor: 'pointer' }}>টার্মস এন্ড কন্ডিশন</li>
+                                <h4 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '2rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>ন্যাভিগেশন</h4>
+                                <ul style={{ listStyle: 'none', padding: 0, color: 'var(--text-muted)' }}>
+                                    <li style={{ marginBottom: '1.2rem', cursor: 'pointer', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>সহযোগিতা</li>
+                                    <li style={{ marginBottom: '1.2rem', cursor: 'pointer', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>মেম্বার সুবিধা</li>
+                                    <li style={{ marginBottom: '1.2rem', cursor: 'pointer', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>প্রাইভেসি পলিসি</li>
+                                    <li style={{ marginBottom: '1.2rem', cursor: 'pointer', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>শর্তাবলী</li>
                                 </ul>
                             </div>
                             <div>
-                                <h4 style={{ fontSize: '1.3rem', marginBottom: '1.5rem' }}>যোগাযোগ</h4>
-                                <ul style={{ listStyle: 'none', padding: 0, color: '#94a3b8' }}>
-                                    <li style={{ marginBottom: '1rem' }}>📍 ধানমন্ডি, ঢাকা - ১২০৯</li>
-                                    <li style={{ marginBottom: '1rem' }}>📞 +৮৮০ ১৮০০-XXXXXX</li>
-                                    <li style={{ marginBottom: '1rem' }}>✉️ support@foodcatering.com</li>
+                                <h4 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '2rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>যোগাযোগ</h4>
+                                <ul style={{ listStyle: 'none', padding: 0, color: 'var(--text-muted)' }}>
+                                    <li style={{ marginBottom: '1.2rem', display: 'flex', gap: '1rem' }}><span>📍</span> সদর রোড, বরিশাল</li>
+                                    <li style={{ marginBottom: '1.2rem', display: 'flex', gap: '1rem' }}><span>📞</span> +৮৮০ ১৭০০-বরিশাল</li>
+                                    <li style={{ marginBottom: '1.2rem', display: 'flex', gap: '1rem' }}><span>✉️</span> info@cateringbarisal.com</li>
                                 </ul>
                             </div>
                         </div>
 
-                        <div style={{ textAlign: 'center', paddingTop: '3rem', borderTop: '1px solid rgba(255,255,255,0.05)', color: '#64748b' }}>
-                            <p>&copy; ২০২৬ ফুড ক্যাটারিং সার্ভিস | সর্বস্বত্ব সংরক্ষিত</p>
+                        <div style={{ textAlign: 'center', paddingTop: '3rem', borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                            <p>&copy; ২০২৬ ফুড ক্যাটারিং বরিশাল | সেরা স্বাদের নিশ্চয়তা</p>
                         </div>
                     </div>
                 </footer>
@@ -367,8 +434,8 @@ const LandingPage = ({ onLoginClick }) => {
                         left: 0,
                         width: '100vw',
                         height: '100vh',
-                        background: 'rgba(0,0,0,0.75)',
-                        backdropFilter: 'blur(10px)',
+                        background: 'rgba(2, 6, 23, 0.85)',
+                        backdropFilter: 'blur(15px)',
                         zIndex: 99999,
                         display: 'flex',
                         alignItems: 'center',
@@ -378,108 +445,106 @@ const LandingPage = ({ onLoginClick }) => {
                     onClick={() => setShowModal(false)}
                 >
                     <div
-                        className="animate-pop-in"
+                        className="animate-pop-in glass-card"
                         style={{
-                            background: 'white',
-                            color: '#1e293b',
-                            padding: '3rem',
-                            borderRadius: '40px',
+                            background: 'var(--charcoal)',
+                            padding: '3.5rem',
                             width: '100%',
-                            maxWidth: '550px',
-                            boxShadow: '0 50px 120px rgba(0,0,0,0.5)',
-                            position: 'relative'
+                            maxWidth: '600px',
+                            position: 'relative',
+                            border: '1px solid rgba(255,255,255,0.1)'
                         }}
                         onClick={e => e.stopPropagation()}
                     >
                         <button onClick={() => setShowModal(false)} style={{
                             position: 'absolute',
-                            top: '25px',
-                            right: '25px',
-                            background: '#f1f5f9',
-                            border: 'none',
-                            width: '45px',
-                            height: '45px',
+                            top: '30px',
+                            right: '30px',
+                            background: 'rgba(255,255,255,0.05)',
+                            color: 'white',
+                            width: '40px',
+                            height: '40px',
                             borderRadius: '50%',
-                            fontSize: '1.3rem',
-                            cursor: 'pointer',
+                            fontSize: '1rem',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s',
-                            boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
-                        }}>✕</button>
+                            transition: 'var(--transition)'
+                        }} onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.1)'} onMouseOut={e => e.target.style.background = 'rgba(255,255,255,0.05)'}>✕</button>
 
-                        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                            <h3 style={{ fontSize: '2.2rem', color: '#0f172a', marginBottom: '0.8rem', fontWeight: '900' }}>সাবস্ক্রিপশন ফরম</h3>
-                            <p style={{ color: '#64748b', fontSize: '1.1rem' }}>সেরা প্যাকেজটি বেছে নিতে নিচের তথ্যগুলো দিন</p>
+                        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                            <h3 style={{ fontSize: '2.5rem', color: 'white', marginBottom: '1rem', fontWeight: '900', fontFamily: "'Poppins', sans-serif" }}>এলিট ক্লাবে যোগ দিন</h3>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>আপনার তথ্য প্রদান করে যাত্রা শুরু করুন।</p>
                         </div>
 
                         <form onSubmit={handleSubmit}>
-                            <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '700', color: '#334155' }}>আপনার পূর্ণ নাম</label>
+                            <div style={{ marginBottom: '1.8rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '600', color: 'white', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>পূর্ণ নাম</label>
                                 <input
                                     type="text"
                                     name="name"
                                     required
                                     value={formData.name}
                                     onChange={handleInputChange}
-                                    style={{ width: '100%', padding: '1.2rem', borderRadius: '18px', border: '2px solid #f1f5f9', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s' }}
+                                    style={{ width: '100%', padding: '1.2rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '1rem', outline: 'none', transition: 'var(--transition)' }}
                                     placeholder="আপনার নাম লিখুন"
+                                    onFocus={e => e.target.style.borderColor = 'var(--primary)'}
+                                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                                 />
                             </div>
 
-                            <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '700', color: '#334155' }}>মোবাইল নাম্বার</label>
+                            <div style={{ marginBottom: '1.8rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '600', color: 'white', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ফোন নাম্বার</label>
                                 <input
                                     type="tel"
                                     name="phone"
                                     required
                                     value={formData.phone}
                                     onChange={handleInputChange}
-                                    style={{ width: '100%', padding: '1.2rem', borderRadius: '18px', border: '2px solid #f1f5f9', fontSize: '1rem' }}
-                                    placeholder="০১৭XXXXXXXX"
+                                    style={{ width: '100%', padding: '1.2rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '1rem' }}
+                                    placeholder="+৮৮০"
                                 />
                             </div>
 
-                            <div style={{ marginBottom: '2.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '1.2rem', fontWeight: '700', color: '#334155' }}>পছন্দের প্যাকেজ</label>
+                            <div style={{ marginBottom: '3rem' }}>
+                                <label style={{ display: 'block', marginBottom: '1.2rem', fontWeight: '600', color: 'white', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>পছন্দের মেম্বারশিপ</label>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                                     <label style={{
                                         display: 'flex',
                                         flexDirection: 'column',
                                         padding: '1.5rem',
-                                        borderRadius: '24px',
-                                        border: formData.package === 'weekly' ? '3px solid var(--primary)' : '2px solid #f1f5f9',
-                                        background: formData.package === 'weekly' ? 'rgba(5, 150, 105, 0.05)' : 'white',
+                                        borderRadius: '20px',
+                                        border: formData.package === 'weekly' ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)',
+                                        background: formData.package === 'weekly' ? 'rgba(249, 115, 22, 0.05)' : 'rgba(255,255,255,0.02)',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s'
                                     }}>
-                                        <div className="flex" style={{ marginBottom: '0.8rem' }}>
+                                        <div className="flex" style={{ marginBottom: '1rem' }}>
                                             <input type="radio" name="package" value="weekly" checked={formData.package === 'weekly'} onChange={handleInputChange} />
-                                            <span style={{ fontWeight: '800', fontSize: '1.1rem' }}>সাপ্তাহিক</span>
+                                            <span style={{ fontWeight: '700', fontSize: '1.1rem', color: 'white' }}>সাপ্তাহিক ট্রায়াল</span>
                                         </div>
-                                        <span style={{ color: 'var(--primary)', fontWeight: '900', fontSize: '1.3rem' }}>৳ ৭০০</span>
+                                        <span style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '1.4rem' }}>৳ ১৪০০</span>
                                     </label>
                                     <label style={{
                                         display: 'flex',
                                         flexDirection: 'column',
                                         padding: '1.5rem',
-                                        borderRadius: '24px',
-                                        border: formData.package === 'monthly' ? '3px solid var(--primary)' : '2px solid #f1f5f9',
-                                        background: formData.package === 'monthly' ? 'rgba(5, 150, 105, 0.05)' : 'white',
+                                        borderRadius: '20px',
+                                        border: formData.package === 'monthly' ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)',
+                                        background: formData.package === 'monthly' ? 'rgba(249, 115, 22, 0.05)' : 'rgba(255,255,255,0.02)',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s'
                                     }}>
-                                        <div className="flex" style={{ marginBottom: '0.8rem' }}>
+                                        <div className="flex" style={{ marginBottom: '1rem' }}>
                                             <input type="radio" name="package" value="monthly" checked={formData.package === 'monthly'} onChange={handleInputChange} />
-                                            <span style={{ fontWeight: '800', fontSize: '1.1rem' }}>মাসিক</span>
+                                            <span style={{ fontWeight: '700', fontSize: '1.1rem', color: 'white' }}>প্রফেশনাল মান্থলি</span>
                                         </div>
-                                        <span style={{ color: 'var(--primary)', fontWeight: '900', fontSize: '1.3rem' }}>৳ ২৪০০</span>
+                                        <span style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '1.4rem' }}>৳ ৫০০০</span>
                                     </label>
                                 </div>
                             </div>
 
-                            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1.4rem', fontSize: '1.2rem', borderRadius: '18px', fontWeight: '900', letterSpacing: '0.5px' }}>অনুরোধ পাঠান</button>
+                            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1.4rem', fontSize: '1.2rem', fontWeight: '800' }}>অনুরোধ পাঠান</button>
                         </form>
                     </div>
                 </div>
