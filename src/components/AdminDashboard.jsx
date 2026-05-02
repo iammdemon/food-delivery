@@ -240,7 +240,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                                 <div className="flex" style={{ marginTop: '0.8rem', gap: '0.5rem' }}>
                                                     <select
                                                         onChange={e => assignRider(order._id || order.id, e.target.value)}
-                                                        style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.75rem', padding: '0.2rem' }}
+                                                        style={{ fontSize: '0.75rem', padding: '0.2rem' }}
                                                     >
                                                         <option value="">Assign Rider</option>
                                                         {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
@@ -262,7 +262,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         <form onSubmit={addDish} className="grid" style={{ gridTemplateColumns: '1fr 100px 150px 50px 120px', gap: '1rem', marginTop: '1.5rem' }}>
                             <input type="text" placeholder="খাবারের নাম" value={itemName} onChange={e => setItemName(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
                             <input type="number" placeholder="মূল্য" value={itemPrice} onChange={e => setItemPrice(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
-                            <select value={itemCategory} onChange={e => setItemCategory(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }}>
+                            <select value={itemCategory} onChange={e => setItemCategory(e.target.value)} style={{ padding: '0.5rem' }}>
                                 <option value="lunch">লাঞ্চ (দুপুর)</option>
                                 <option value="dinner">ডিনার (রাত)</option>
                             </select>
@@ -338,7 +338,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                 toast.error('পেমেন্ট রেকর্ড করা সম্ভব হয়নি');
                             }
                         }} className="grid" style={{ gap: '1rem', marginTop: '1.5rem' }}>
-                            <select value={selectedRiderForPay} onChange={e => setSelectedRiderForPay(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }}>
+                            <select value={selectedRiderForPay} onChange={e => setSelectedRiderForPay(e.target.value)} style={{ padding: '0.5rem' }}>
                                 <option value="">রাইডার নির্বাচন করুন</option>
                                 {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
                             </select>
@@ -542,7 +542,7 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
                                         {order.assignedRider && <span style={{ fontSize: '0.75rem', color: 'var(--primary)' }}>👤 {order.assignedRider}</span>}
                                         {order.deliveryProof && <button onClick={() => setViewProof(order.deliveryProof)} style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}>🖼️ Proof</button>}
                                         {!order.assignedRider && (
-                                            <select onChange={e => assignRider(order._id || order.id, e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.7rem' }}>
+                                            <select onChange={e => assignRider(order._id || order.id, e.target.value)} style={{ fontSize: '0.7rem' }}>
                                                 <option value="">নির্ধারণ</option>
                                                 {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
                                             </select>
