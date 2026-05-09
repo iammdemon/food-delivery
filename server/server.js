@@ -133,6 +133,38 @@ app.patch('/api/users/:username/profile', async (req, res) => {
     }
 });
 
+app.get('/api/users', async (req, res) => {
+    try {
+        const users = await User.find().sort({ createdAt: -1 });
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.patch('/api/users/:username/role', async (req, res) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { username: req.params.username },
+            { role: req.body.role },
+            { new: true }
+        );
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/users/:username', async (req, res) => {
+    try {
+        await User.findOneAndDelete({ username: req.params.username });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // 2. Menu Routes
 app.get('/api/menu', async (req, res) => {
     try {

@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from '../utils/toast';
 
 import API_BASE from '../api';
+
+const ROLE_COLORS = {
+    admin:    { bg: 'rgba(239,68,68,0.15)',   color: '#ef4444' },
+    kitchen:  { bg: 'rgba(251,191,36,0.15)',  color: '#fbbf24' },
+    rider:    { bg: 'rgba(59,130,246,0.15)',  color: '#60a5fa' },
+    customer: { bg: 'rgba(16,185,129,0.15)',  color: '#10b981' },
+};
 
 const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments, setPayments, topUpRequests, setTopUpRequests, subscriptionRequests, setSubscriptionRequests, fetchData }) => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -23,6 +30,63 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
     const [filterType, setFilterType] = useState('all'); // all, 7d, 30d, 1y, custom
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
+
+    // Users tab state
+    const [users, setUsers] = useState([]);
+    const [userRoleFilter, setUserRoleFilter] = useState('all');
+    const [userSearch, setUserSearch] = useState('');
+    const [newUserName, setNewUserName] = useState('');
+    const [newUserRole, setNewUserRole] = useState('customer');
+
+    useEffect(() => {
+        if (activeTab === 'users') fetchUsers();
+    }, [activeTab]);
+
+    const fetchUsers = async () => {
+        try {
+            const res = await axios.get(`${API_BASE}/users`);
+            setUsers(res.data);
+        } catch (err) {
+            console.error('Failed to fetch users:', err);
+        }
+    };
+
+    const changeRole = async (username, role) => {
+        try {
+            await axios.patch(`${API_BASE}/users/${username}/role`, { role });
+            setUsers(prev => prev.map(u => u.username === username ? { ...u, role } : u));
+        } catch (err) {
+            alert('Failed to change role');
+        }
+    };
+
+    const deleteUser = async (username, name) => {
+        if (!window.confirm(`Delete user "${name}"? This cannot be undone.`)) return;
+        try {
+            await axios.delete(`${API_BASE}/users/${username}`);
+            setUsers(prev => prev.filter(u => u.username !== username));
+        } catch (err) {
+            alert('Failed to delete user');
+        }
+    };
+
+    const addUser = async (e) => {
+        e.preventDefault();
+        if (!newUserName.trim()) return;
+        const username = newUserName.trim().toLowerCase().replace(/\s+/g, '_');
+        try {
+            const res = await axios.post(`${API_BASE}/auth/login`, {
+                username,
+                name: newUserName.trim(),
+                role: newUserRole
+            });
+            setUsers(prev => [res.data, ...prev]);
+            setNewUserName('');
+            alert(`User "${newUserName}" added as ${newUserRole}!`);
+        } catch (err) {
+            alert('Failed to add user');
+        }
+    };
 
     const riders = menu.riders || [];
 
@@ -170,24 +234,27 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             )}
 
             {/* Admin Tab Navigation */}
-            <nav className="flex" style={{ gap: '1rem', background: 'var(--glass-bg)', padding: '0.5rem', borderRadius: '12px' }}>
-                {['overview', 'menu', 'riders', 'orders', 'payments', 'subscriptions'].map(tab => (
+            {/* Admin Tab Navigation */}
+            <nav className="flex" style={{ gap: '0.5rem', background: 'var(--glass-bg)', padding: '0.5rem', borderRadius: '12px', flexWrap: 'wrap' }}>
+                {[
+                    { key: 'overview',      label: 'Overview' },
+                    { key: 'users',         label: '👥 Users' },
+                    { key: 'menu',          label: 'Menu' },
+                    { key: 'riders',        label: 'Riders' },
+                    { key: 'orders',        label: 'Orders' },
+                    { key: 'payments',      label: 'TopUp Requests' },
+                    { key: 'subscriptions', label: 'Membership' },
+                ].map(({ key, label }) => (
                     <button
-                        key={tab}
-                        className={activeTab === tab ? 'btn-primary' : 'btn-outline'}
-                        onClick={() => setActiveTab(tab)}
-                        style={{ padding: '0.6rem 1.2rem', textTransform: 'capitalize', border: activeTab === tab ? 'none' : '1px solid var(--glass-border)' }}
+                        key={key}
+                        className={activeTab === key ? 'btn-primary' : 'btn-outline'}
+                        onClick={() => setActiveTab(key)}
+                        style={{ padding: '0.6rem 1.2rem', border: activeTab === key ? 'none' : '1px solid var(--glass-border)' }}
                     >
-                        {tab === 'overview' ? 'ওভারভিউ' : 
-                         tab === 'menu' ? 'মেনু' : 
-                         tab === 'riders' ? 'রাইডার' : 
-                         tab === 'orders' ? 'অর্ডারসমূহ' : 
-                         tab === 'payments' ? 'টপ-আপ রিকোয়েস্ট' : 
-                         tab === 'subscriptions' ? 'মেম্বারশিপ' : tab}
+                        {label}
                     </button>
                 ))}
             </nav>
-
             {activeTab === 'overview' && (
                 <div className="grid" style={{ gap: '2rem' }}>
                     <section className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
@@ -347,6 +414,144 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         </form>
                     </div>
                 </section>
+            )}
+
+            {activeTab === 'users' && (
+                <div className="grid" style={{ gap: '2rem' }}>
+                    {/* Add User */}
+                    <section className="glass-card">
+                        <h3 style={{ marginBottom: '1.5rem' }}>➕ Add User Manually</h3>
+                        <form onSubmit={addUser} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                            <div style={{ flex: '1 1 200px' }}>
+                                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Full Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Karim Hossain"
+                                    value={newUserName}
+                                    onChange={e => setNewUserName(e.target.value)}
+                                    required
+                                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                            <div style={{ flex: '0 0 160px' }}>
+                                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Role</label>
+                                <select
+                                    value={newUserRole}
+                                    onChange={e => setNewUserRole(e.target.value)}
+                                    style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem' }}
+                                >
+                                    <option value="customer">Customer</option>
+                                    <option value="rider">Rider</option>
+                                    <option value="kitchen">Kitchen</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <button type="submit" className="btn-primary" style={{ padding: '0.6rem 1.5rem', whiteSpace: 'nowrap' }}>Add User</button>
+                        </form>
+                    </section>
+
+                    {/* User List */}
+                    <section className="glass-card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                            <h3>All Users <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>({users.length} total)</span></h3>
+                            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name..."
+                                    value={userSearch}
+                                    onChange={e => setUserSearch(e.target.value)}
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.45rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem', width: '180px' }}
+                                />
+                                <select
+                                    value={userRoleFilter}
+                                    onChange={e => setUserRoleFilter(e.target.value)}
+                                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.45rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem' }}
+                                >
+                                    <option value="all">All Roles</option>
+                                    <option value="customer">Customer</option>
+                                    <option value="rider">Rider</option>
+                                    <option value="kitchen">Kitchen</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <button onClick={fetchUsers} className="btn-outline" style={{ padding: '0.45rem 0.8rem', fontSize: '0.85rem' }}>↻ Refresh</button>
+                            </div>
+                        </div>
+
+                        {/* Role Summary Pills */}
+                        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                            {['admin', 'kitchen', 'rider', 'customer'].map(role => {
+                                const count = users.filter(u => u.role === role).length;
+                                const { bg, color } = ROLE_COLORS[role];
+                                return (
+                                    <span key={role} onClick={() => setUserRoleFilter(userRoleFilter === role ? 'all' : role)} style={{ background: bg, color, padding: '0.3rem 0.9rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', textTransform: 'capitalize', border: `1px solid ${color}40` }}>
+                                        {role} · {count}
+                                    </span>
+                                );
+                            })}
+                        </div>
+
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                                        <th style={{ padding: '0.7rem 1rem' }}>Name</th>
+                                        <th style={{ padding: '0.7rem 1rem' }}>Phone</th>
+                                        <th style={{ padding: '0.7rem 1rem' }}>Balance</th>
+                                        <th style={{ padding: '0.7rem 1rem' }}>Current Role</th>
+                                        <th style={{ padding: '0.7rem 1rem' }}>Change Role</th>
+                                        <th style={{ padding: '0.7rem 1rem' }}>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users
+                                        .filter(u => userRoleFilter === 'all' || u.role === userRoleFilter)
+                                        .filter(u => !userSearch || u.name.toLowerCase().includes(userSearch.toLowerCase()))
+                                        .map(u => {
+                                            const { bg, color } = ROLE_COLORS[u.role] || ROLE_COLORS.customer;
+                                            return (
+                                                <tr key={u._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                                    <td style={{ padding: '0.8rem 1rem' }}>
+                                                        <div style={{ fontWeight: '600' }}>{u.name}</div>
+                                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{u.address || '—'}</div>
+                                                    </td>
+                                                    <td style={{ padding: '0.8rem 1rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{u.phone || '—'}</td>
+                                                    <td style={{ padding: '0.8rem 1rem', color: 'var(--primary)', fontWeight: '700' }}>৳ {(u.balance || 0).toFixed(0)}</td>
+                                                    <td style={{ padding: '0.8rem 1rem' }}>
+                                                        <span style={{ background: bg, color, padding: '0.25rem 0.7rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'capitalize' }}>
+                                                            {u.role}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: '0.8rem 1rem' }}>
+                                                        <select
+                                                            value={u.role}
+                                                            onChange={e => changeRole(u.username, e.target.value)}
+                                                            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.3rem 0.6rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                        >
+                                                            <option value="customer">Customer</option>
+                                                            <option value="rider">Rider</option>
+                                                            <option value="kitchen">Kitchen</option>
+                                                            <option value="admin">Admin</option>
+                                                        </select>
+                                                    </td>
+                                                    <td style={{ padding: '0.8rem 1rem' }}>
+                                                        <button
+                                                            onClick={() => deleteUser(u.username, u.name)}
+                                                            style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    {users.filter(u => userRoleFilter === 'all' || u.role === userRoleFilter).filter(u => !userSearch || u.name.toLowerCase().includes(userSearch.toLowerCase())).length === 0 && (
+                                        <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No users found.</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
             )}
 
             {activeTab === 'orders' && <OrderHistorySection filteredOrders={filteredOrders} assignRider={assignRider} riders={riders} setViewProof={setViewProof} />}

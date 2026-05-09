@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
 import toast from './utils/toast';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { onAuthStateChanged, signOut, getRedirectResult } from 'firebase/auth';
+import { auth } from './firebase';
+import { DASHBOARD_MAP } from './constants';
 import { useWallet } from './hooks/useWallet';
 import { useTimeCheck } from './hooks/useTimeCheck';
 import { useProfile } from './hooks/useProfile';
@@ -18,6 +21,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CustomerDashboard from './components/CustomerDashboard';
 
 import API_BASE from './api';
+const ADMIN_EMAILS = ['seo.mdemon@gmail.com'];
 
 // Extracted DashboardLayout to prevent re-creation on every render
 const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balance, setShowTopUpModal, handleLogout, showTopUpModal, handleTopUpRequest }) => (
@@ -53,10 +57,9 @@ const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balan
 const AppContent = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('menu');
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('current_user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const isInitialAuthCheck = useRef(true);
 
   const { balance, topUp, deduct, refresh: refreshWallet } = useWallet(user?.username || user?.id);
   const { profile, updateProfile } = useProfile(user?.username || user?.id);
@@ -98,45 +101,73 @@ const AppContent = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('current_user', JSON.stringify(user));
-
-      // Prevent redundant sync
-      const savedUser = JSON.parse(localStorage.getItem('current_user'));
-      if (savedUser && savedUser.role !== user.role) {
-        // ...
-      }
-    } else {
-      localStorage.removeItem('current_user');
-    }
-  }, [user]);
-
-  // New effect for one-time validation on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('current_user');
-    if (saved) {
-      const parsedUser = JSON.parse(saved);
-      axios.post(`${API_BASE}/auth/login`, {
-        username: parsedUser.username || parsedUser.id,
-        name: parsedUser.name,
-        role: parsedUser.role
-      }).then(res => {
-        if (res.data.role !== parsedUser.role) {
-          setUser(prev => ({ ...prev, role: res.data.role }));
-        }
-      }).catch(err => console.error('Auth sync failed:', err));
-    }
+    getRedirectResult(auth).catch(err => {
+      console.error('Google redirect error:', err.message);
+    });
   }, []);
 
-  const handleLogin = (u) => {
-    setUser(u);
-    const dashboardMap = { admin: '/admin', rider: '/rider', customer: '/user', kitchen: '/kitchen' };
-    navigate(dashboardMap[u.role] || '/');
-  };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      const isInitial = isInitialAuthCheck.current;
+      isInitialAuthCheck.current = false;
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/');
+      if (firebaseUser) {
+        try {
+          const cached = JSON.parse(localStorage.getItem('current_user') || 'null');
+
+          if (cached?.username === firebaseUser.uid) {
+            // Token refresh or session restore — reuse cache, skip network calls
+            setUser(cached);
+            setAuthLoading(false);
+            return;
+          }
+
+          // New login or signup — sync with Firebase and backend
+          if (!firebaseUser.displayName) await firebaseUser.reload();
+          const freshUser = auth.currentUser;
+          const email = freshUser.email || '';
+          const name = freshUser.displayName || email.split('@')[0];
+          let role = 'customer';
+          if (ADMIN_EMAILS.includes(email)) role = 'admin';
+          if (email.toLowerCase().includes('kitchen')) role = 'kitchen';
+
+          const response = await axios.post(`${API_BASE}/auth/login`, {
+            username: freshUser.uid,
+            name,
+            role
+          });
+
+          const userData = {
+            id: response.data.username,
+            username: response.data.username,
+            name: response.data.name,
+            role: response.data.role,
+            email
+          };
+
+          setUser(userData);
+          localStorage.setItem('current_user', JSON.stringify(userData));
+
+          if (!isInitial) navigate(DASHBOARD_MAP[userData.role] || '/');
+        } catch (err) {
+          console.error('Auth sync failed:', err);
+          setUser(null);
+          localStorage.removeItem('current_user');
+        }
+      } else {
+        setUser(null);
+        localStorage.removeItem('current_user');
+        if (!isInitial) navigate('/');
+      }
+
+      setAuthLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
   };
 
   const handleTopUpRequest = async (requestData) => {
@@ -193,10 +224,23 @@ const AppContent = () => {
 
   const myOrders = orderHistory.filter(o => o.customerId === (user?.username || user?.id));
 
+  if (authLoading) {
+    return (
+      <div className="flex" style={{ height: '100vh', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ fontSize: '3rem' }}>🍱</div>
+        <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage onLoginClick={() => navigate('/login')} />} />
-      <Route path="/login" element={<div className="container"><Login onLogin={handleLogin} /></div>} />
+      <Route path="/login" element={
+        user
+          ? <Navigate to={DASHBOARD_MAP[user.role] || '/'} replace />
+          : <div className="container"><Login /></div>
+      } />
 
       <Route path="/admin" element={
         <ProtectedRoute user={user} allowedRole="admin">
