@@ -4,16 +4,32 @@ import toast from '../utils/toast';
 
 import API_BASE from '../api';
 
-const RiderDashboard = ({ username, orderHistory, setOrderHistory, payments, fetchData }) => {
+const RiderDashboard = ({ riderId, username, orderHistory, setOrderHistory, payments, fetchData }) => {
     const [deliveryPhotos, setDeliveryPhotos] = useState({}); // To store local base64 for unsaved orders
     const [isCompleting, setIsCompleting] = useState({});
 
-    const assignedOrders = orderHistory.filter(order => order.assignedRider === username);
+    // Helper to normalize strings (lowercase, alphanumeric only) for robust matching
+    const normalize = (str) => {
+        if (!str) return '';
+        return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    };
+
+    const normRiderId = normalize(riderId);
+    const normUsername = normalize(username);
+
+    // Matches order.assignedRider against either the secure riderId (unique UID/username) or their display name
+    const assignedOrders = orderHistory.filter(order => {
+        const normAssigned = normalize(order.assignedRider);
+        return normAssigned === normRiderId || normAssigned === normUsername;
+    });
 
     // Commission Calculations
     const deliveredOrders = assignedOrders.filter(o => o.status === 'Delivered');
     const totalEarned = deliveredOrders.length * 30;
-    const totalPaid = payments.filter(p => p.riderName === username).reduce((sum, p) => sum + p.amount, 0);
+    const totalPaid = payments.filter(p => {
+        const normPayRider = normalize(p.riderName);
+        return normPayRider === normRiderId || normPayRider === normUsername;
+    }).reduce((sum, p) => sum + p.amount, 0);
     const pendingBalance = totalEarned - totalPaid;
 
     const handleFileChange = (orderId, e) => {

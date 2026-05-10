@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    signInWithRedirect,
+    signInWithPopup,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     updateProfile
@@ -42,9 +42,10 @@ const Login = () => {
         setIsLoading(true);
         setError('');
         try {
-            await signInWithRedirect(auth, googleProvider);
+            await signInWithPopup(auth, googleProvider);
         } catch (err) {
-            setError('Google sign-in failed. Please try again.');
+            console.error('Google Sign-in Error:', err);
+            setError('Google sign-in failed: ' + (err.message || 'Please try again.'));
             setIsLoading(false);
         }
     };

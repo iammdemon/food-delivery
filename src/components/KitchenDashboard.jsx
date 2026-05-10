@@ -48,16 +48,36 @@ const KitchenDashboard = ({ orderHistory, fetchData }) => {
         }
     };
 
+    // Active orders are any orders that are NOT Delivered yet (no date filter to prevent midnight cutoff/timezone bugs)
+    const activeOrders = orderHistory.filter(o => o.status !== 'Delivered');
+
+    // Delivered orders are filtered to show only those delivered today (or recent 5)
+    const deliveredToday = orderHistory.filter(o => {
+        if (o.status !== 'Delivered') return false;
+        const ts = getTimestamp(o);
+        const orderDate = new Date(ts);
+        const today = new Date();
+        return orderDate.getFullYear() === today.getFullYear() &&
+            orderDate.getMonth() === today.getMonth() &&
+            orderDate.getDate() === today.getDate();
+    });
+
     const statusOptions = ['Confirmed', 'Preparing', 'Sent For Delivery', 'Delivered'];
 
-    // Group orders by status for better visibility
+    // Group active orders by status columns (with 'Assigned' mapped to 'Confirmed' so they don't vanish!)
     const groupedOrders = statusOptions.reduce((acc, status) => {
-        acc[status] = todaysOrders.filter(o => o.status === status || (!o.status && status === 'Confirmed' && o.assignedRider));
+        if (status === 'Confirmed') {
+            acc[status] = activeOrders.filter(o => o.status === 'Confirmed' || o.status === 'Assigned');
+        } else if (status === 'Delivered') {
+            acc[status] = deliveredToday;
+        } else {
+            acc[status] = activeOrders.filter(o => o.status === status);
+        }
         return acc;
     }, {});
 
     // Orders that are just "Paid" but not yet "Confirmed"
-    const pendingOrders = todaysOrders.filter(o => !o.status || o.status === 'Paid');
+    const pendingOrders = activeOrders.filter(o => !o.status || o.status === 'Paid');
 
     return (
         <div className="animate-fade-in grid" style={{ gap: '2rem' }}>

@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, enum: ['admin', 'rider', 'customer', 'kitchen'], default: 'customer' },
     balance: { type: Number, default: 0 },
     phone: { type: String, default: '' },
-    address: { type: String, default: '' }
+    address: { type: String, default: '' },
+    customId: { type: String, unique: true, sparse: true }
 }, { timestamps: true });
 
 export default mongoose.model('User', UserSchema);

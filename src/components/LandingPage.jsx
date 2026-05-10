@@ -100,7 +100,7 @@ const LandingPage = ({ onLoginClick }) => {
                         <a href="#how-it-works" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>প্রক্রিয়া</a>
                         <a href="#menu" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>মেনু</a>
                         <a href="#packages" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500', transition: 'color 0.3s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>প্যাকেজ</a>
-                        <button onClick={onLoginClick} className="btn-primary" style={{ padding: '0.8rem 2.2rem', fontSize: '0.95rem' }}>
+                        <button onClick={() => { console.log('DEBUG: Login button clicked! onLoginClick type:', typeof onLoginClick); if (onLoginClick) onLoginClick(); else console.error('DEBUG: onLoginClick is undefined!'); }} className="btn-primary" style={{ padding: '0.8rem 2.2rem', fontSize: '0.95rem' }}>
                             লগইন
                         </button>
                     </div>

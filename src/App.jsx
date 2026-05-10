@@ -30,8 +30,13 @@ const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balan
     <header className="flex" style={{ justifyContent: 'space-between', marginBottom: '3rem' }}>
       <div>
         <h1 style={{ fontSize: '2.5rem' }}>ফুড ক্যাটারিং <span style={{ color: 'var(--primary)' }}>বরিশাল</span></h1>
-        <p style={{ color: 'var(--text-muted)' }}>
+        <p style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           Welcome, <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.name}</span> ({title})
+          {user?.customId && (
+            <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--primary)', background: 'rgba(235, 94, 40, 0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '0.75rem', border: '1px solid rgba(235, 94, 40, 0.2)' }}>
+              ID: {user.customId}
+            </span>
+          )}
         </p>
       </div>
       <div className="flex">
@@ -148,16 +153,24 @@ const AppContent = () => {
           setUser(userData);
           localStorage.setItem('current_user', JSON.stringify(userData));
 
-          if (!isInitial) navigate(DASHBOARD_MAP[userData.role] || '/');
+          const publicRoutes = ['/', '/login'];
+          if (publicRoutes.includes(window.location.pathname) || !isInitial) {
+            navigate(DASHBOARD_MAP[userData.role] || '/');
+          }
         } catch (err) {
           console.error('Auth sync failed:', err);
+          toast.error('Database Sync Failed: ' + (err.response?.data?.error || err.message || 'Could not register user.'));
           setUser(null);
           localStorage.removeItem('current_user');
         }
       } else {
+        // Only redirect to homepage if they were previously logged in (transition to logged out)
+        const wasLoggedIn = !!localStorage.getItem('current_user') || user !== null;
         setUser(null);
         localStorage.removeItem('current_user');
-        if (!isInitial) navigate('/');
+        if (wasLoggedIn && !isInitial) {
+          navigate('/');
+        }
       }
 
       setAuthLoading(false);
@@ -167,7 +180,15 @@ const AppContent = () => {
   }, [navigate]);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    console.log('DEBUG: handleLogout called!');
+    try {
+      await signOut(auth);
+      console.log('DEBUG: signOut(auth) completed!');
+      toast.success('Successfully logged out!');
+    } catch (error) {
+      console.error('DEBUG: signOut error:', error);
+      toast.error('Logout failed: ' + error.message);
+    }
   };
 
   const handleTopUpRequest = async (requestData) => {
@@ -235,7 +256,11 @@ const AppContent = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage onLoginClick={() => navigate('/login')} />} />
+      <Route path="/" element={
+        user
+          ? <Navigate to={DASHBOARD_MAP[user.role] || '/'} replace />
+          : <LandingPage onLoginClick={() => navigate('/login')} />
+      } />
       <Route path="/login" element={
         user
           ? <Navigate to={DASHBOARD_MAP[user.role] || '/'} replace />
@@ -253,7 +278,7 @@ const AppContent = () => {
       <Route path="/rider" element={
         <ProtectedRoute user={user} allowedRole="rider">
           <DashboardLayout title="Rider" user={user} handleLogout={handleLogout} showTopUpModal={showTopUpModal} setShowTopUpModal={setShowTopUpModal} handleTopUpRequest={handleTopUpRequest}>
-            <RiderDashboard username={user?.name} orderHistory={orderHistory} setOrderHistory={setOrderHistory} payments={payments} fetchData={fetchData} />
+            <RiderDashboard riderId={user?.username} username={user?.name} orderHistory={orderHistory} setOrderHistory={setOrderHistory} payments={payments} fetchData={fetchData} />
           </DashboardLayout>
         </ProtectedRoute>
       } />

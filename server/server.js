@@ -89,9 +89,29 @@ app.post('/api/auth/login', async (req, res) => {
     try {
         let user = await User.findOne({ username });
 
+        // Helper to generate the next auto-incremented EFC ID starting from 1001
+        const generateNextCustomId = async () => {
+            const lastUser = await User.findOne({ customId: /^EFC-/ }).sort({ customId: -1 });
+            let nextNum = 1001;
+            if (lastUser && lastUser.customId) {
+                const match = lastUser.customId.match(/\d+/);
+                if (match) {
+                    nextNum = parseInt(match[0], 10) + 1;
+                }
+            }
+            // Ensure uniqueness
+            let customId = `EFC-${nextNum}`;
+            while (await User.findOne({ customId })) {
+                nextNum++;
+                customId = `EFC-${nextNum}`;
+            }
+            return customId;
+        };
+
         if (!user) {
+            const customId = await generateNextCustomId();
             // New user: use role from frontend (admin/kitchen/customer)
-            user = new User({ username, name, role });
+            user = new User({ username, name, role, customId });
             await user.save();
         } else {
             // Existing user: Sync name, but only update role if it's a promotion to admin/kitchen
@@ -99,6 +119,9 @@ app.post('/api/auth/login', async (req, res) => {
             const newRole = (role === 'admin' || role === 'kitchen') ? role : user.role;
             user.name = name;
             user.role = newRole;
+            if (!user.customId) {
+                user.customId = await generateNextCustomId();
+            }
             await user.save();
         }
         res.json(user);

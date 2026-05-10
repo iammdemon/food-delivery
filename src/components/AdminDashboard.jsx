@@ -90,6 +90,13 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 
     const riders = menu.riders || [];
 
+    // Helper to map stored rider value (name or username/UID) to their beautiful display name
+    const getRiderDisplayName = (assignedVal) => {
+        if (!assignedVal) return '';
+        const found = riders.find(r => r.username === assignedVal || r.name === assignedVal);
+        return found ? found.name : assignedVal;
+    };
+
     // Helper to parse dates for older orders if missing timestamp
     const getTimestamp = (order) => {
         if (order.timestamp) return order.timestamp;
@@ -171,10 +178,29 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
         }
     };
 
-    const getRiderStats = (name) => {
-        const deliveredCount = orderHistory.filter(o => o.assignedRider === name && o.status === 'Delivered').length;
+    const normalize = (str) => {
+        if (!str) return '';
+        return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    };
+
+    const getRiderStats = (r) => {
+        if (!r) return { earned: 0, paid: 0, pending: 0 };
+        const normName = normalize(r.name);
+        const normUsername = normalize(r.username);
+
+        const deliveredCount = orderHistory.filter(o => {
+            if (o.status !== 'Delivered') return false;
+            const normAssigned = normalize(o.assignedRider);
+            return normAssigned === normName || normAssigned === normUsername;
+        }).length;
+
         const earned = deliveredCount * 30;
-        const paid = payments.filter(p => p.riderName === name).reduce((sum, p) => sum + p.amount, 0);
+
+        const paid = payments.filter(p => {
+            const normPayRider = normalize(p.riderName);
+            return normPayRider === normName || normPayRider === normUsername;
+        }).reduce((sum, p) => sum + p.amount, 0);
+
         return { earned, paid, pending: earned - paid };
     };
 
@@ -310,7 +336,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                                         style={{ fontSize: '0.75rem', padding: '0.2rem' }}
                                                     >
                                                         <option value="">Assign Rider</option>
-                                                        {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
+                                                        {riders.map(r => <option key={r._id || r.id} value={r.username}>{r.name}</option>)}
                                                     </select>
                                                 </div>
                                             )}
@@ -374,7 +400,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         </div>
                         <div className="grid" style={{ gap: '0.5rem', marginTop: '1rem' }}>
                             {riders.map(r => {
-                                const s = getRiderStats(r.name);
+                                const s = getRiderStats(r);
                                 return (
                                     <div key={r._id || r.id} className="glass-card" style={{ padding: '0.8rem' }}>
                                         <div className="flex" style={{ justifyContent: 'space-between' }}>
@@ -407,7 +433,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         }} className="grid" style={{ gap: '1rem', marginTop: '1.5rem' }}>
                             <select value={selectedRiderForPay} onChange={e => setSelectedRiderForPay(e.target.value)} style={{ padding: '0.5rem' }}>
                                 <option value="">রাইডার নির্বাচন করুন</option>
-                                {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
+                                {riders.map(r => <option key={r._id || r.id} value={r.username}>{r.name}</option>)}
                             </select>
                             <input type="number" placeholder="টাকার পরিমাণ" value={payAmount} onChange={e => setPayAmount(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }} />
                             <button type="submit" className="btn-primary">পেমেন্ট নিশ্চিত করুন</button>
@@ -494,6 +520,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
                                 <thead>
                                     <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                                        <th style={{ padding: '0.7rem 1rem' }}>User ID</th>
                                         <th style={{ padding: '0.7rem 1rem' }}>Name</th>
                                         <th style={{ padding: '0.7rem 1rem' }}>Phone</th>
                                         <th style={{ padding: '0.7rem 1rem' }}>Balance</th>
@@ -510,6 +537,11 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                             const { bg, color } = ROLE_COLORS[u.role] || ROLE_COLORS.customer;
                                             return (
                                                 <tr key={u._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                                    <td style={{ padding: '0.8rem 1rem' }}>
+                                                        <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--primary)', background: 'rgba(235, 94, 40, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', border: '1px solid rgba(235, 94, 40, 0.2)' }}>
+                                                            {u.customId || '—'}
+                                                        </span>
+                                                    </td>
                                                     <td style={{ padding: '0.8rem 1rem' }}>
                                                         <div style={{ fontWeight: '600' }}>{u.name}</div>
                                                         <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{u.address || '—'}</div>
@@ -545,7 +577,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                             );
                                         })}
                                     {users.filter(u => userRoleFilter === 'all' || u.role === userRoleFilter).filter(u => !userSearch || u.name.toLowerCase().includes(userSearch.toLowerCase())).length === 0 && (
-                                        <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No users found.</td></tr>
+                                        <tr><td colSpan="7" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No users found.</td></tr>
                                     )}
                                 </tbody>
                             </table>
@@ -554,7 +586,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                 </div>
             )}
 
-            {activeTab === 'orders' && <OrderHistorySection filteredOrders={filteredOrders} assignRider={assignRider} riders={riders} setViewProof={setViewProof} />}
+            {activeTab === 'orders' && <OrderHistorySection filteredOrders={filteredOrders} assignRider={assignRider} riders={riders} setViewProof={setViewProof} getRiderDisplayName={getRiderDisplayName} />}
 
             {activeTab === 'payments' && (
                 <section className="glass-card">
@@ -689,7 +721,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 };
 
 // Sub-component for better state management of pagination
-const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof }) => {
+const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof, getRiderDisplayName }) => {
     const ITEMS_PER_PAGE = 10;
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -744,12 +776,12 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
                                         <span style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', background: order.status === 'Delivered' ? 'var(--primary)' : 'var(--secondary)' }}>
                                             {order.status === 'Delivered' ? 'ডেলিভারড' : order.status === 'Assigned' ? 'রাইডার নির্ধারিত' : 'প্রক্রিয়াধীন'}
                                         </span>
-                                        {order.assignedRider && <span style={{ fontSize: '0.75rem', color: 'var(--primary)' }}>👤 {order.assignedRider}</span>}
+                                        {order.assignedRider && <span style={{ fontSize: '0.75rem', color: 'var(--primary)' }}>👤 {getRiderDisplayName(order.assignedRider)}</span>}
                                         {order.deliveryProof && <button onClick={() => setViewProof(order.deliveryProof)} style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}>🖼️ Proof</button>}
                                         {!order.assignedRider && (
                                             <select onChange={e => assignRider(order._id || order.id, e.target.value)} style={{ fontSize: '0.7rem' }}>
                                                 <option value="">নির্ধারণ</option>
-                                                {riders.map(r => <option key={r._id || r.id} value={r.name}>{r.name}</option>)}
+                                                {riders.map(r => <option key={r._id || r.id} value={r.username}>{r.name}</option>)}
                                             </select>
                                         )}
                                     </div>
