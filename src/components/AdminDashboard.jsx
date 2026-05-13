@@ -7,10 +7,10 @@ import toast from '../utils/toast';
 import API_BASE from '../api';
 
 const ROLE_COLORS = {
-    admin:    { bg: 'rgba(239,68,68,0.15)',   color: '#ef4444' },
-    kitchen:  { bg: 'rgba(251,191,36,0.15)',  color: '#fbbf24' },
-    rider:    { bg: 'rgba(59,130,246,0.15)',  color: '#60a5fa' },
-    customer: { bg: 'rgba(16,185,129,0.15)',  color: '#10b981' },
+    admin:    { bg: 'rgba(239,68,68,0.12)',   color: '#f87171', border: 'rgba(239,68,68,0.3)' },
+    kitchen:  { bg: 'rgba(251,191,36,0.12)',  color: '#fbbf24', border: 'rgba(251,191,36,0.3)' },
+    rider:    { bg: 'rgba(59,130,246,0.12)',  color: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
+    customer: { bg: 'rgba(16,185,129,0.12)',  color: '#34d399', border: 'rgba(16,185,129,0.3)' },
 };
 
 const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments, setPayments, topUpRequests, setTopUpRequests, subscriptionRequests, setSubscriptionRequests, fetchData }) => {
@@ -286,7 +286,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
         <div className="animate-fade-in grid" style={{ gap: '2rem' }}>
             {/* Proof Modal */}
             {viewProof && (
-                <div onClick={() => setViewProof(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}>
+                <div onClick={() => setViewProof(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}>
                     <div className="glass-card" style={{ padding: '1rem', maxWidth: '80%', maxHeight: '80%' }}>
                         <img src={viewProof} alt="Proof" style={{ width: '100%', maxHeight: '70vh', borderRadius: '8px' }} />
                     </div>
@@ -300,7 +300,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🧾</div>
                         <h3 style={{ marginBottom: '0.25rem' }}>Payment Receipt</h3>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>ফুড ক্যাটারিং বরিশাল</p>
-                        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
+                        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
                             {[
                                 ['Rider', payReceipt.riderDisplayName || payReceipt.riderName],
                                 ['Amount', `৳ ${payReceipt.amount}`],
@@ -322,8 +322,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             )}
 
             {/* Admin Tab Navigation */}
-            {/* Admin Tab Navigation */}
-            <nav className="flex" style={{ gap: '0.5rem', background: 'var(--glass-bg)', padding: '0.5rem', borderRadius: '12px', flexWrap: 'wrap' }}>
+            <nav className="flex" style={{ gap: '0.4rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '0.4rem', borderRadius: '14px', flexWrap: 'wrap' }}>
                 {[
                     { key: 'overview',      label: 'Overview' },
                     { key: 'users',         label: '👥 Users' },
@@ -337,26 +336,27 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         key={key}
                         className={activeTab === key ? 'btn-primary' : 'btn-outline'}
                         onClick={() => setActiveTab(key)}
-                        style={{ padding: '0.6rem 1.2rem', border: activeTab === key ? 'none' : '1px solid var(--glass-border)' }}
+                        style={{ padding: '0.55rem 1.1rem', fontSize: '0.88rem', border: activeTab === key ? 'none' : undefined }}
                     >
                         {label}
                     </button>
                 ))}
             </nav>
+
             {activeTab === 'overview' && (
                 <div className="grid" style={{ gap: '2rem' }}>
                     <section className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-                        <div className="glass-card" style={{ textAlign: 'center', borderColor: 'var(--primary)' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>💰 মোট আয়</p>
-                            <h2 style={{ color: 'var(--primary)' }}>৳ {totalRevenue.toFixed(2)}</h2>
+                        <div className="glass-card" style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(249,115,22,0.14) 0%, rgba(249,115,22,0.04) 100%)', borderColor: 'rgba(249,115,22,0.35)' }}>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>💰 মোট আয়</p>
+                            <h2 style={{ color: '#fb923c', fontSize: '2rem', fontWeight: '800' }}>৳ {totalRevenue.toFixed(2)}</h2>
                         </div>
-                        <div className="glass-card" style={{ textAlign: 'center', borderColor: 'var(--secondary)' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>📦 মোট অর্ডার</p>
-                            <h2 style={{ color: 'var(--secondary)' }}>{totalOrdersCount}</h2>
+                        <div className="glass-card" style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(245,158,11,0.14) 0%, rgba(245,158,11,0.04) 100%)', borderColor: 'rgba(245,158,11,0.35)' }}>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>📦 মোট অর্ডার</p>
+                            <h2 style={{ color: '#fbbf24', fontSize: '2rem', fontWeight: '800' }}>{totalOrdersCount}</h2>
                         </div>
-                        <div className="glass-card" style={{ textAlign: 'center', borderColor: '#8b5cf6' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>👥 কাস্টমার</p>
-                            <h2 style={{ color: '#a78bfa' }}>{uniqueCustomers}</h2>
+                        <div className="glass-card" style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(139,92,246,0.14) 0%, rgba(139,92,246,0.04) 100%)', borderColor: 'rgba(139,92,246,0.35)' }}>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>👥 কাস্টমার</p>
+                            <h2 style={{ color: '#a78bfa', fontSize: '2rem', fontWeight: '800' }}>{uniqueCustomers}</h2>
                         </div>
                     </section>
 
@@ -380,13 +380,24 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                         return isToday && o.status !== 'Delivered';
                                     })
                                     .map(order => (
-                                        <div key={order._id || order.id} className="glass-card" style={{ padding: '0.8rem', borderLeft: `4px solid ${order.status === 'Assigned' ? 'var(--primary)' : 'var(--secondary)'}` }}>
+                                        <div key={order._id || order.id} className="glass-card" style={{
+                                            padding: '0.8rem',
+                                            borderLeft: `3px solid ${order.status === 'Assigned' ? 'var(--primary)' : 'var(--secondary)'}`,
+                                            background: `linear-gradient(90deg, ${order.status === 'Assigned' ? 'rgba(249,115,22,0.07)' : 'rgba(245,158,11,0.07)'} 0%, transparent 100%)`,
+                                        }}>
                                             <div className="flex" style={{ justifyContent: 'space-between' }}>
                                                 <div>
                                                     <span style={{ fontWeight: 'bold' }}>{order.customerName}</span>
                                                     <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.type.toUpperCase()}</span>
                                                 </div>
-                                                <span style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(255,255,255,0.05)' }}>
+                                                <span style={{
+                                                    fontSize: '0.75rem',
+                                                    padding: '0.2rem 0.6rem',
+                                                    borderRadius: '50px',
+                                                    background: order.status === 'Assigned' ? 'rgba(249,115,22,0.15)' : 'rgba(245,158,11,0.15)',
+                                                    color: order.status === 'Assigned' ? 'var(--primary)' : 'var(--secondary)',
+                                                    border: `1px solid ${order.status === 'Assigned' ? 'rgba(249,115,22,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                                                }}>
                                                     {order.status || 'Paid'}
                                                 </span>
                                             </div>
@@ -415,13 +426,13 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                     <section className="glass-card">
                         <h3>➕ নতুন খাবার যোগ করুন</h3>
                         <form onSubmit={addDish} className="grid" style={{ gridTemplateColumns: '1fr 100px 150px 50px 120px', gap: '1rem', marginTop: '1.5rem' }}>
-                            <input type="text" placeholder="খাবারের নাম" value={itemName} onChange={e => setItemName(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
-                            <input type="number" placeholder="মূল্য" value={itemPrice} onChange={e => setItemPrice(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem' }} />
+                            <input type="text" placeholder="খাবারের নাম" value={itemName} onChange={e => setItemName(e.target.value)} style={{ background: 'rgba(255,255,255,0.06)', color: 'white', padding: '0.5rem' }} />
+                            <input type="number" placeholder="মূল্য" value={itemPrice} onChange={e => setItemPrice(e.target.value)} style={{ background: 'rgba(255,255,255,0.06)', color: 'white', padding: '0.5rem' }} />
                             <select value={itemCategory} onChange={e => setItemCategory(e.target.value)} style={{ padding: '0.5rem' }}>
                                 <option value="lunch">লাঞ্চ (দুপুর)</option>
                                 <option value="dinner">ডিনার (রাত)</option>
                             </select>
-                            <input type="text" value={itemIcon} onChange={e => setItemIcon(e.target.value)} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.5rem', textAlign: 'center' }} />
+                            <input type="text" value={itemIcon} onChange={e => setItemIcon(e.target.value)} style={{ background: 'rgba(255,255,255,0.06)', color: 'white', padding: '0.5rem', textAlign: 'center' }} />
                             <button type="submit" className="btn-primary">খাবার যোগ করুন</button>
                         </form>
                     </section>
@@ -432,9 +443,14 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                 <h3 style={{ textTransform: 'capitalize' }}>{cat === 'lunch' ? 'লাঞ্চ' : 'ডিনার'} মেনু</h3>
                                 <div className="grid" style={{ gap: '0.5rem', marginTop: '1rem' }}>
                                     {menu[cat].map(item => (
-                                        <div key={item._id || item.id} className="flex" style={{ justifyContent: 'space-between', padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <div key={item._id || item.id} className="flex" style={{ justifyContent: 'space-between', padding: '0.5rem 0.4rem', borderBottom: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px' }}>
                                             <span>{item.icon} {item.name} (৳{item.price})</span>
-                                            <button onClick={() => removeDish(item._id || item.id, cat)} style={{ color: '#ef4444', background: 'none' }}>মুছে ফেলুন</button>
+                                            <button
+                                                onClick={() => removeDish(item._id || item.id, cat)}
+                                                style={{ color: '#f87171', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.78rem' }}
+                                            >
+                                                মুছে ফেলুন
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -455,7 +471,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                     placeholder="রাইডারের নাম"
                                     value={newRiderName}
                                     onChange={e => setNewRiderName(e.target.value)}
-                                    style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0.4rem', borderRadius: '4px', fontSize: '0.8rem' }}
+                                    style={{ background: 'rgba(255,255,255,0.06)', color: 'white', padding: '0.4rem', borderRadius: '4px', fontSize: '0.8rem' }}
                                 />
                                 <button type="submit" className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>যোগ করুন</button>
                             </form>
@@ -464,12 +480,12 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                             {riders.map(r => {
                                 const s = getRiderStats(r);
                                 return (
-                                    <div key={r._id || r.id} className="glass-card" style={{ padding: '0.8rem' }}>
+                                    <div key={r._id || r.id} className="glass-card" style={{ padding: '0.85rem', background: 'rgba(59,130,246,0.06)', borderColor: 'rgba(59,130,246,0.2)' }}>
                                         <div className="flex" style={{ justifyContent: 'space-between' }}>
-                                            <span style={{ fontWeight: 'bold' }}>{r.name}</span>
-                                            <span style={{ color: 'var(--primary)' }}>Pend: ₹{s.pending}</span>
+                                            <span style={{ fontWeight: '600' }}>{r.name}</span>
+                                            <span style={{ color: s.pending > 0 ? '#fb923c' : '#34d399', fontWeight: '700', fontSize: '0.9rem' }}>৳{s.pending} pending</span>
                                         </div>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Total Earned: ₹{s.earned} | Paid: ₹{s.paid}</p>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>Earned: ৳{s.earned} &nbsp;·&nbsp; Paid: ৳{s.paid}</p>
                                     </div>
                                 );
                             })}
@@ -493,16 +509,16 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                 fetchData();
                                 setPayAmount('');
                                 setPayReceipt({ ...paymentData, _id: res.data._id });
-                                toast.success('পেমেন্ট সফল হয়েছে! 💸');
+                                toast.success('পেমেন্ট সফল হয়েছে! 💸');
                             } catch (err) {
-                                toast.error('পেমেন্ট রেকর্ড করা সম্ভব হয়নি');
+                                toast.error('পেমেন্ট রেকর্ড করা সম্ভব হয়নি');
                             }
                         }} className="grid" style={{ gap: '1rem', marginTop: '1.5rem' }}>
                             <select value={selectedRiderForPay} onChange={e => setSelectedRiderForPay(e.target.value)} style={{ padding: '0.5rem' }}>
                                 <option value="">রাইডার নির্বাচন করুন</option>
                                 {riders.map(r => <option key={r._id || r.id} value={r.username}>{r.name}</option>)}
                             </select>
-                            <input type="number" placeholder="টাকার পরিমাণ" value={payAmount} onChange={e => setPayAmount(e.target.value)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem' }} />
+                            <input type="number" placeholder="টাকার পরিমাণ" value={payAmount} onChange={e => setPayAmount(e.target.value)} style={{ background: 'rgba(255,255,255,0.07)', color: 'white', padding: '0.5rem' }} />
                             <button type="submit" className="btn-primary">পেমেন্ট নিশ্চিত করুন</button>
                         </form>
                     </div>
@@ -524,7 +540,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                         value={newUserUsername}
                                         onChange={e => setNewUserUsername(e.target.value)}
                                         required
-                                        style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
                                     />
                                 </div>
                                 <div>
@@ -535,7 +551,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                         value={newUserEmail}
                                         onChange={e => setNewUserEmail(e.target.value)}
                                         required
-                                        style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
                                     />
                                 </div>
                                 <div>
@@ -547,7 +563,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                             value={newUserPassword}
                                             onChange={e => setNewUserPassword(e.target.value)}
                                             required
-                                            style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 2.4rem 0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                            style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 2.4rem 0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
                                         />
                                         <button
                                             type="button"
@@ -563,7 +579,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                     <select
                                         value={newUserRole}
                                         onChange={e => setNewUserRole(e.target.value)}
-                                        style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
                                     >
                                         <option value="customer">Customer</option>
                                         <option value="rider">Rider</option>
@@ -588,12 +604,12 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                     placeholder="Search by name..."
                                     value={userSearch}
                                     onChange={e => setUserSearch(e.target.value)}
-                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.45rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem', width: '180px' }}
+                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.45rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem', width: '180px' }}
                                 />
                                 <select
                                     value={userRoleFilter}
                                     onChange={e => setUserRoleFilter(e.target.value)}
-                                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.45rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem' }}
+                                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.45rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem' }}
                                 >
                                     <option value="all">All Roles</option>
                                     <option value="customer">Customer</option>
@@ -606,12 +622,27 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         </div>
 
                         {/* Role Summary Pills */}
-                        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                             {['admin', 'kitchen', 'rider', 'customer'].map(role => {
                                 const count = users.filter(u => u.role === role).length;
-                                const { bg, color } = ROLE_COLORS[role];
+                                const { bg, color, border } = ROLE_COLORS[role];
                                 return (
-                                    <span key={role} onClick={() => setUserRoleFilter(userRoleFilter === role ? 'all' : role)} style={{ background: bg, color, padding: '0.3rem 0.9rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', textTransform: 'capitalize', border: `1px solid ${color}40` }}>
+                                    <span
+                                        key={role}
+                                        onClick={() => setUserRoleFilter(userRoleFilter === role ? 'all' : role)}
+                                        style={{
+                                            background: userRoleFilter === role ? bg.replace('0.12', '0.22') : bg,
+                                            color,
+                                            padding: '0.3rem 0.9rem',
+                                            borderRadius: '50px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: '700',
+                                            cursor: 'pointer',
+                                            textTransform: 'capitalize',
+                                            border: `1px solid ${border}`,
+                                            transition: 'all 0.2s',
+                                        }}
+                                    >
                                         {role} · {count}
                                     </span>
                                 );
@@ -621,14 +652,14 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
                                 <thead>
-                                    <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                                        <th style={{ padding: '0.7rem 1rem' }}>User ID</th>
-                                        <th style={{ padding: '0.7rem 1rem' }}>Name</th>
-                                        <th style={{ padding: '0.7rem 1rem' }}>Phone</th>
-                                        <th style={{ padding: '0.7rem 1rem' }}>Balance</th>
-                                        <th style={{ padding: '0.7rem 1rem' }}>Current Role</th>
-                                        <th style={{ padding: '0.7rem 1rem' }}>Change Role</th>
-                                        <th style={{ padding: '0.7rem 1rem' }}>Action</th>
+                                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)', fontSize: '0.78rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>User ID</th>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>Name</th>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>Phone</th>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>Balance</th>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>Role</th>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>Change Role</th>
+                                        <th style={{ padding: '0.7rem 1rem', fontWeight: '600' }}>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -636,11 +667,11 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                         .filter(u => userRoleFilter === 'all' || u.role === userRoleFilter)
                                         .filter(u => !userSearch || u.name.toLowerCase().includes(userSearch.toLowerCase()))
                                         .map(u => {
-                                            const { bg, color } = ROLE_COLORS[u.role] || ROLE_COLORS.customer;
+                                            const { bg, color, border } = ROLE_COLORS[u.role] || ROLE_COLORS.customer;
                                             return (
-                                                <tr key={u._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                                <tr key={u._id} className="tr-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                                     <td style={{ padding: '0.8rem 1rem' }}>
-                                                        <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--primary)', background: 'rgba(235, 94, 40, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', border: '1px solid rgba(235, 94, 40, 0.2)' }}>
+                                                        <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#fb923c', background: 'rgba(249,115,22,0.1)', padding: '0.2rem 0.5rem', borderRadius: '5px', fontSize: '0.8rem', border: '1px solid rgba(249,115,22,0.25)' }}>
                                                             {u.customId || '—'}
                                                         </span>
                                                     </td>
@@ -649,9 +680,9 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                                         <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{u.address || '—'}</div>
                                                     </td>
                                                     <td style={{ padding: '0.8rem 1rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{u.phone || '—'}</td>
-                                                    <td style={{ padding: '0.8rem 1rem', color: 'var(--primary)', fontWeight: '700' }}>৳ {(u.balance || 0).toFixed(0)}</td>
+                                                    <td style={{ padding: '0.8rem 1rem', color: '#fb923c', fontWeight: '700' }}>৳ {(u.balance || 0).toFixed(0)}</td>
                                                     <td style={{ padding: '0.8rem 1rem' }}>
-                                                        <span style={{ background: bg, color, padding: '0.25rem 0.7rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'capitalize' }}>
+                                                        <span style={{ background: bg, color, padding: '0.25rem 0.7rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'capitalize', border: `1px solid ${border}` }}>
                                                             {u.role}
                                                         </span>
                                                     </td>
@@ -659,7 +690,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                                         <select
                                                             value={u.role}
                                                             onChange={e => changeRole(u.username, e.target.value)}
-                                                            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.3rem 0.6rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.3rem 0.6rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
                                                         >
                                                             <option value="customer">Customer</option>
                                                             <option value="rider">Rider</option>
@@ -670,7 +701,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                                     <td style={{ padding: '0.8rem 1rem' }}>
                                                         <button
                                                             onClick={() => deleteUser(u.username, u.name)}
-                                                            style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                            style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.25)', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
                                                         >
                                                             Delete
                                                         </button>
@@ -693,64 +724,66 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             {activeTab === 'payments' && (
                 <section className="glass-card">
                     <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <h3 style={{ margin: 0 }}>🏦 বিকাশ টপ-আপ রিকোয়েস্ট</h3>
+                        <h3 style={{ margin: 0 }}>🏦 বিকাশ টপ-আপ রিকোয়েস্ট</h3>
                         <div className="flex" style={{ alignItems: 'center', gap: '1rem' }}>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{topUpRequests.filter(r => r.status === 'Pending').length} পেন্ডিং</span>
-                            <button onClick={() => fetchData()} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}>🔄 Refresh</button>
+                            <span style={{ fontSize: '0.8rem', background: 'rgba(245,158,11,0.12)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', padding: '0.25rem 0.7rem', borderRadius: '50px' }}>
+                                {topUpRequests.filter(r => r.status === 'Pending').length} pending
+                            </span>
+                            <button onClick={() => fetchData()} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-main)' }}>🔄 Refresh</button>
                         </div>
                     </div>
                     <div style={{ overflowX: 'auto', marginTop: '1.5rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
                             <thead>
-                                <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)' }}>
-                                    <th style={{ padding: '0.8rem' }}>তারিখ/সময়</th>
-                                    <th style={{ padding: '0.8rem' }}>কাস্টমার</th>
-                                    <th style={{ padding: '0.8rem' }}>পরিমাণ</th>
-                                    <th style={{ padding: '0.8rem' }}>প্রেরক নম্বর</th>
-                                    <th style={{ padding: '0.8rem' }}>প্রমাণ (Screenshot)</th>
-                                    <th style={{ padding: '0.8rem' }}>অ্যাকশন</th>
+                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)', fontSize: '0.78rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>তারিখ/সময়</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>কাস্টমার</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>পরিমাণ</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>প্রেরক নম্বর</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>প্রমাণ</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>অ্যাকশন</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {topUpRequests.length === 0 && (
-                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>কোনো টপ-আপ রিকোয়েস্ট পাওয়া যায়নি।</td></tr>
+                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>কোনো টপ-আপ রিকোয়েস্ট পাওয়া যায়নি।</td></tr>
                                 )}
-                                {topUpRequests.map(req => {
-                                    return (
-                                        <tr key={req._id || req.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                                            <td style={{ padding: '0.8rem', fontSize: '0.8rem' }}>
-                                                <div>{req.timestamp ? new Date(req.timestamp).toLocaleDateString('en-GB') : '—'}</div>
-                                                <div style={{ color: 'var(--text-muted)' }}>{req.timestamp ? new Date(req.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : ''}</div>
-                                            </td>
-                                            <td style={{ padding: '0.8rem' }}>
-                                                <div style={{ fontWeight: 'bold' }}>{req.username}</div>
-                                            </td>
-                                            <td style={{ padding: '0.8rem', color: 'var(--primary)', fontWeight: 'bold' }}>৳ {req.amount}</td>
-                                            <td style={{ padding: '0.8rem' }}>{req.senderPhone}</td>
-                                            <td style={{ padding: '0.8rem' }}>
-                                                <button onClick={() => setViewProof(req.screenshot)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer' }}>👁️ View</button>
-                                            </td>
-                                            <td style={{ padding: '0.8rem' }}>
-                                                {req.status === 'Pending' ? (
-                                                    <div className="flex" style={{ gap: '0.5rem' }}>
-                                                        <button onClick={() => handleApproveTopUp(req)} className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>গ্রহণ করুন</button>
-                                                        <button onClick={() => handleRejectTopUp(req._id || req.id)} style={{ background: 'none', color: '#ef4444', border: '1px solid #ef4444', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.8rem' }}>প্রত্যাখ্যান</button>
-                                                    </div>
-                                                ) : (
-                                                    <span style={{
-                                                        padding: '0.3rem 0.6rem',
-                                                        borderRadius: '4px',
-                                                        fontSize: '0.75rem',
-                                                        background: req.status === 'Approved' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                                                        color: req.status === 'Approved' ? '#10b981' : '#ef4444'
-                                                    }}>
-                                                        {req.status === 'Approved' ? 'অনুমোদিত' : 'প্রত্যাখ্যাত'}
-                                                    </span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {topUpRequests.map(req => (
+                                    <tr key={req._id || req.id} className="tr-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                        <td style={{ padding: '0.8rem', fontSize: '0.8rem' }}>
+                                            <div>{req.timestamp ? new Date(req.timestamp).toLocaleDateString('en-GB') : '—'}</div>
+                                            <div style={{ color: 'var(--text-muted)' }}>{req.timestamp ? new Date(req.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : ''}</div>
+                                        </td>
+                                        <td style={{ padding: '0.8rem' }}>
+                                            <div style={{ fontWeight: '600' }}>{req.username}</div>
+                                        </td>
+                                        <td style={{ padding: '0.8rem', color: '#fb923c', fontWeight: '700' }}>৳ {req.amount}</td>
+                                        <td style={{ padding: '0.8rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>{req.senderPhone}</td>
+                                        <td style={{ padding: '0.8rem' }}>
+                                            <button onClick={() => setViewProof(req.screenshot)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: 'var(--text-main)', padding: '0.3rem 0.7rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}>👁️ View</button>
+                                        </td>
+                                        <td style={{ padding: '0.8rem' }}>
+                                            {req.status === 'Pending' ? (
+                                                <div className="flex" style={{ gap: '0.5rem' }}>
+                                                    <button onClick={() => handleApproveTopUp(req)} className="btn-primary" style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}>গ্রহণ করুন</button>
+                                                    <button onClick={() => handleRejectTopUp(req._id || req.id)} style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.25)', padding: '0.35rem 0.8rem', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>প্রত্যাখ্যান</button>
+                                                </div>
+                                            ) : (
+                                                <span style={{
+                                                    padding: '0.25rem 0.7rem',
+                                                    borderRadius: '50px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: '600',
+                                                    background: req.status === 'Approved' ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)',
+                                                    color: req.status === 'Approved' ? '#34d399' : '#f87171',
+                                                    border: req.status === 'Approved' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(239,68,68,0.3)',
+                                                }}>
+                                                    {req.status === 'Approved' ? '✓ অনুমোদিত' : '✗ প্রত্যাখ্যাত'}
+                                                </span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -760,61 +793,67 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
             {activeTab === 'subscriptions' && (
                 <section className="glass-card">
                     <div className="flex" style={{ justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                        <h3>💎 মেম্বারশিপ রিকোয়েস্ট</h3>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{subscriptionRequests.length}টি রিকোয়েস্ট পাওয়া গেছে</span>
+                        <h3>💎 মেম্বারশিপ রিকোয়েস্ট</h3>
+                        <span style={{ fontSize: '0.8rem', background: 'rgba(139,92,246,0.1)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.25)', padding: '0.25rem 0.7rem', borderRadius: '50px' }}>
+                            {subscriptionRequests.length}টি রিকোয়েস্ট
+                        </span>
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
                             <thead>
-                                <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)' }}>
-                                    <th style={{ padding: '0.8rem' }}>তারিখ</th>
-                                    <th style={{ padding: '0.8rem' }}>কাস্টমার</th>
-                                    <th style={{ padding: '0.8rem' }}>ফোন</th>
-                                    <th style={{ padding: '0.8rem' }}>প্যাকেজ</th>
-                                    <th style={{ padding: '0.8rem' }}>স্ট্যাটাস</th>
-                                    <th style={{ padding: '0.8rem' }}>অ্যাকশন</th>
+                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)', fontSize: '0.78rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>তারিখ</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>কাস্টমার</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>ফোন</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>প্যাকেজ</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>স্ট্যাটাস</th>
+                                    <th style={{ padding: '0.8rem', fontWeight: '600' }}>অ্যাকশন</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {subscriptionRequests.length === 0 && (
-                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>এখনো কোনো মেম্বারশিপ রিকোয়েস্ট নেই।</td></tr>
+                                    <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>এখনো কোনো মেম্বারশিপ রিকোয়েস্ট নেই।</td></tr>
                                 )}
                                 {subscriptionRequests.map(req => (
-                                    <tr key={req._id || req.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                                        <td style={{ padding: '0.8rem', fontSize: '0.85rem' }}>{new Date(req.timestamp).toLocaleDateString()}</td>
-                                        <td style={{ padding: '0.8rem', fontWeight: 'bold' }}>{req.name}</td>
-                                        <td style={{ padding: '0.8rem' }}>{req.phone}</td>
+                                    <tr key={req._id || req.id} className="tr-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                        <td style={{ padding: '0.8rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{new Date(req.timestamp).toLocaleDateString()}</td>
+                                        <td style={{ padding: '0.8rem', fontWeight: '600' }}>{req.name}</td>
+                                        <td style={{ padding: '0.8rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{req.phone}</td>
                                         <td style={{ padding: '0.8rem' }}>
-                                            <span style={{ 
-                                                padding: '0.2rem 0.6rem', 
-                                                borderRadius: '4px', 
+                                            <span style={{
+                                                padding: '0.25rem 0.7rem',
+                                                borderRadius: '50px',
                                                 fontSize: '0.75rem',
-                                                background: req.package === 'monthly' ? 'rgba(249, 115, 22, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                                                color: req.package === 'monthly' ? 'var(--primary)' : 'var(--secondary)'
+                                                fontWeight: '600',
+                                                background: req.package === 'monthly' ? 'rgba(249,115,22,0.12)' : 'rgba(245,158,11,0.12)',
+                                                color: req.package === 'monthly' ? 'var(--primary)' : 'var(--secondary)',
+                                                border: req.package === 'monthly' ? '1px solid rgba(249,115,22,0.3)' : '1px solid rgba(245,158,11,0.3)',
                                             }}>
                                                 {req.package === 'monthly' ? 'মাসিক' : 'সাপ্তাহিক'}
                                             </span>
                                         </td>
                                         <td style={{ padding: '0.8rem' }}>
                                             <span style={{
-                                                padding: '0.3rem 0.6rem',
-                                                borderRadius: '4px',
+                                                padding: '0.25rem 0.7rem',
+                                                borderRadius: '50px',
                                                 fontSize: '0.75rem',
-                                                background: req.status === 'Approved' ? 'rgba(16, 185, 129, 0.1)' : req.status === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.05)',
-                                                color: req.status === 'Approved' ? '#10b981' : req.status === 'Rejected' ? '#ef4444' : 'white'
+                                                fontWeight: '600',
+                                                background: req.status === 'Approved' ? 'rgba(16,185,129,0.12)' : req.status === 'Rejected' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
+                                                color: req.status === 'Approved' ? '#34d399' : req.status === 'Rejected' ? '#f87171' : '#fbbf24',
+                                                border: req.status === 'Approved' ? '1px solid rgba(16,185,129,0.3)' : req.status === 'Rejected' ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(245,158,11,0.3)',
                                             }}>
-                                                {req.status === 'Approved' ? 'অনুমোদিত' : req.status === 'Rejected' ? 'প্রত্যাখ্যাত' : 'পেন্ডিং'}
+                                                {req.status === 'Approved' ? '✓ অনুমোদিত' : req.status === 'Rejected' ? '✗ প্রত্যাখ্যাত' : '⏳ পেন্ডিং'}
                                             </span>
                                         </td>
                                         <td style={{ padding: '0.8rem' }}>
                                             <div className="flex" style={{ gap: '0.5rem' }}>
                                                 {req.status === 'Pending' && (
                                                     <>
-                                                        <button onClick={() => handleUpdateSubscriptionStatus(req._id || req.id, 'Approved')} className="btn-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}>Approve</button>
-                                                        <button onClick={() => handleUpdateSubscriptionStatus(req._id || req.id, 'Rejected')} style={{ background: 'none', color: '#ef4444', border: '1px solid #ef4444', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem' }}>Reject</button>
+                                                        <button onClick={() => handleUpdateSubscriptionStatus(req._id || req.id, 'Approved')} className="btn-primary" style={{ padding: '0.3rem 0.7rem', fontSize: '0.75rem' }}>Approve</button>
+                                                        <button onClick={() => handleUpdateSubscriptionStatus(req._id || req.id, 'Rejected')} style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.25)', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}>Reject</button>
                                                     </>
                                                 )}
-                                                <button onClick={() => handleDeleteSubscription(req._id || req.id)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>🗑️</button>
+                                                <button onClick={() => handleDeleteSubscription(req._id || req.id)} style={{ color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.3rem 0.5rem' }}>🗑️</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -842,12 +881,18 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const currentOrders = filteredOrders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
+    const getStatusStyle = (status) => {
+        if (status === 'Delivered') return { bg: 'rgba(16,185,129,0.12)', color: '#34d399', border: 'rgba(16,185,129,0.3)' };
+        if (status === 'Assigned') return { bg: 'rgba(249,115,22,0.12)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' };
+        return { bg: 'rgba(245,158,11,0.12)', color: '#fbbf24', border: 'rgba(245,158,11,0.3)' };
+    };
+
     return (
         <section className="glass-card">
             <div className="flex" style={{ justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'flex-end' }}>
                 <div>
                     <h3>📦 অর্ডার হিস্ট্রি</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
                         মোট {filteredOrders.length}টি রেকর্ডের মধ্যে {filteredOrders.length > 0 ? startIndex + 1 : 0}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredOrders.length)}টি দেখানো হচ্ছে
                     </p>
                 </div>
@@ -856,70 +901,72 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
             <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
                     <thead>
-                        <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)' }}>
-                            <th style={{ padding: '0.8rem' }}>তারিখ/সময়</th>
-                            <th style={{ padding: '0.8rem' }}>কাস্টমার</th>
-                            <th style={{ padding: '0.8rem' }}>বিবরণ</th>
-                            <th style={{ padding: '0.8rem' }}>রাইডার / প্রমাণ</th>
-                            <th style={{ padding: '0.8rem' }}>মোট টাকা</th>
+                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)', fontSize: '0.78rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                            <th style={{ padding: '0.8rem', fontWeight: '600' }}>তারিখ/সময়</th>
+                            <th style={{ padding: '0.8rem', fontWeight: '600' }}>কাস্টমার</th>
+                            <th style={{ padding: '0.8rem', fontWeight: '600' }}>বিবরণ</th>
+                            <th style={{ padding: '0.8rem', fontWeight: '600' }}>রাইডার / স্ট্যাটাস</th>
+                            <th style={{ padding: '0.8rem', fontWeight: '600' }}>মোট টাকা</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {currentOrders.map(order => (
-                            <tr key={order._id || order.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                                <td style={{ padding: '0.8rem', fontSize: '0.8rem' }}>
-                                    <div>{order.date}</div>
-                                    <div style={{ color: 'var(--text-muted)' }}>{order.time}</div>
-                                </td>
-                                <td style={{ padding: '0.8rem' }}>
-                                    <div style={{ fontWeight: 'bold' }}>{order.customerName}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.customerPhone}</div>
-                                </td>
-                                <td style={{ padding: '0.8rem' }}>
-                                    <div style={{ fontWeight: '600', fontSize: '0.8rem' }}>{order.type === 'lunch' ? 'লাঞ্চ' : 'ডিনার'}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.items.join(', ')}</div>
-                                </td>
-                                <td style={{ padding: '0.8rem' }}>
-                                    <div className="flex" style={{ gap: '0.5rem', alignItems: 'center' }}>
-                                        <span style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', background: order.status === 'Delivered' ? 'var(--primary)' : 'var(--secondary)' }}>
-                                            {order.status === 'Delivered' ? 'ডেলিভারড' : order.status === 'Assigned' ? 'রাইডার নির্ধারিত' : 'প্রক্রিয়াধীন'}
-                                        </span>
-                                        {order.assignedRider && <span style={{ fontSize: '0.75rem', color: 'var(--primary)' }}>👤 {getRiderDisplayName(order.assignedRider)}</span>}
-                                        {order.deliveryProof && <button onClick={() => setViewProof(order.deliveryProof)} style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}>🖼️ Proof</button>}
-                                        {!order.assignedRider && (
-                                            <select onChange={e => assignRider(order._id || order.id, e.target.value)} style={{ fontSize: '0.7rem' }}>
-                                                <option value="">নির্ধারণ</option>
-                                                {riders.map(r => <option key={r._id || r.id} value={r.username}>{r.name}</option>)}
-                                            </select>
-                                        )}
-                                    </div>
-                                </td>
-                                <td style={{ padding: '0.8rem', fontWeight: 'bold' }}>৳ {order.total}</td>
-                            </tr>
-                        ))}
+                        {currentOrders.map(order => {
+                            const st = getStatusStyle(order.status);
+                            return (
+                                <tr key={order._id || order.id} className="tr-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                    <td style={{ padding: '0.8rem', fontSize: '0.8rem' }}>
+                                        <div>{order.date}</div>
+                                        <div style={{ color: 'var(--text-muted)' }}>{order.time}</div>
+                                    </td>
+                                    <td style={{ padding: '0.8rem' }}>
+                                        <div style={{ fontWeight: '600' }}>{order.customerName}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.customerPhone}</div>
+                                    </td>
+                                    <td style={{ padding: '0.8rem' }}>
+                                        <div style={{ fontWeight: '600', fontSize: '0.8rem' }}>{order.type === 'lunch' ? 'লাঞ্চ' : 'ডিনার'}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.items.join(', ')}</div>
+                                    </td>
+                                    <td style={{ padding: '0.8rem' }}>
+                                        <div className="flex" style={{ gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                            <span style={{ padding: '0.2rem 0.6rem', borderRadius: '50px', fontSize: '0.72rem', fontWeight: '600', background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
+                                                {order.status === 'Delivered' ? 'ডেলিভারড' : order.status === 'Assigned' ? 'নির্ধারিত' : 'প্রক্রিয়াধীন'}
+                                            </span>
+                                            {order.assignedRider && <span style={{ fontSize: '0.75rem', color: '#60a5fa' }}>👤 {getRiderDisplayName(order.assignedRider)}</span>}
+                                            {order.deliveryProof && <button onClick={() => setViewProof(order.deliveryProof)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border)', color: 'var(--text-main)', padding: '0.2rem 0.5rem', fontSize: '0.7rem', borderRadius: '6px', cursor: 'pointer' }}>🖼️ Proof</button>}
+                                            {!order.assignedRider && (
+                                                <select onChange={e => assignRider(order._id || order.id, e.target.value)} style={{ fontSize: '0.7rem' }}>
+                                                    <option value="">নির্ধারণ</option>
+                                                    {riders.map(r => <option key={r._id || r.id} value={r.username}>{r.name}</option>)}
+                                                </select>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td style={{ padding: '0.8rem', fontWeight: '700', color: '#fb923c' }}>৳ {order.total}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="flex" style={{ justifyContent: 'center', marginTop: '2rem', gap: '0.5rem' }}>
+                <div className="flex" style={{ justifyContent: 'center', marginTop: '2rem', gap: '0.4rem' }}>
                     <button
                         className="btn-outline"
                         disabled={currentPage === 1}
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        style={{ padding: '0.4rem 0.8rem', opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '0.4rem 0.9rem', opacity: currentPage === 1 ? 0.4 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
                     >
                         ◀ Prev
                     </button>
 
-                    {/* Show limited page numbers if many */}
                     {[...Array(totalPages)].map((_, i) => (
                         <button
                             key={i + 1}
                             className={currentPage === i + 1 ? 'btn-primary' : 'btn-outline'}
                             onClick={() => setCurrentPage(i + 1)}
-                            style={{ padding: '0.4rem 0.8rem', border: currentPage === i + 1 ? 'none' : '1px solid var(--glass-border)' }}
+                            style={{ padding: '0.4rem 0.8rem', minWidth: '2.2rem' }}
                         >
                             {i + 1}
                         </button>
@@ -929,7 +976,7 @@ const OrderHistorySection = ({ filteredOrders, assignRider, riders, setViewProof
                         className="btn-outline"
                         disabled={currentPage === totalPages}
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        style={{ padding: '0.4rem 0.8rem', opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '0.4rem 0.9rem', opacity: currentPage === totalPages ? 0.4 : 1, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
                     >
                         Next ▶
                     </button>

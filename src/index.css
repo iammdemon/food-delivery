@@ -1,18 +1,18 @@
 :root {
-  --primary: #F97316; /* Rich Orange */
+  --primary: #F97316;
   --primary-hover: #EA580C;
-  --secondary: #F59E0B; /* Warm Amber */
-  --charcoal: #111827;
+  --secondary: #F59E0B;
+  --charcoal: #0d1117;
   --deep-dark: #020617;
   --cream: #FFF7ED;
-  --text-main: #F8FAF9;
+  --text-main: #F1F5F9;
   --text-dark: #1F2937;
-  --text-muted: #94A3B8;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --text-muted: #64748B;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-  --card-radius: 24px;
-  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --card-radius: 16px;
+  --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   color-scheme: dark;
 }
 
@@ -27,6 +27,10 @@
 
 body {
   background: var(--charcoal);
+  background-image:
+    radial-gradient(ellipse 70% 55% at 15% 0%, rgba(249, 115, 22, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 45% at 85% 100%, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
+  background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
@@ -45,9 +49,9 @@ body {
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
 .image-zoom-container {
@@ -78,26 +82,28 @@ button {
 .btn-primary {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   color: white;
-  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.25);
   border-radius: 50px;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(249, 115, 22, 0.4);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+  filter: brightness(1.08);
 }
 
 .btn-outline {
-  background: transparent;
-  border: 2px solid rgba(255,255,255,0.1);
-  color: white;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: var(--text-main);
   border-radius: 50px;
 }
 
 .btn-outline:hover {
-  background: white;
-  color: var(--charcoal);
-  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  transform: translateY(-1px);
 }
 
 h1,
@@ -171,7 +177,7 @@ h3 {
 
 /* Dropdown Styles */
 select {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-main);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
@@ -182,16 +188,47 @@ select {
 }
 
 select:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 select option {
-  background: #1e293b; /* Dark Slate 800 */
+  background: #1a2235;
   color: white;
   padding: 10px;
 }
 
 select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
-}
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.18);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"] {
+  transition: var(--transition);
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.18);
+}
+
+/* Table row hover */
+.tr-hover:hover > td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Subtle section divider */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--glass-border);
+  margin: 1.5rem 0;
+}
