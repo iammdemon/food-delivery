@@ -50,7 +50,6 @@ body {
 
 .glass-card:hover {
   border-color: rgba(255, 255, 255, 0.18);
-  transform: translateY(-2px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
@@ -87,9 +86,8 @@ button {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
-  filter: brightness(1.08);
+  filter: brightness(1.1);
 }
 
 .btn-outline {
@@ -103,7 +101,6 @@ button {
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border-color: rgba(255, 255, 255, 0.28) !important;
-  transform: translateY(-1px);
 }
 
 h1,
