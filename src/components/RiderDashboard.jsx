@@ -14,7 +14,7 @@ const PayReceiptModal = ({ payment, onClose }) => {
             <div onClick={e => e.stopPropagation()} className="glass-card" style={{ width: '340px', padding: '2rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '0.25rem' }}>💸</div>
                 <h3 style={{ marginBottom: '0.2rem' }}>Payment Receipt</h3>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>ফুড ক্যাটারিং বরিশাল</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Easy Food</p>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
                     {[
                         ['Rider', payment.riderDisplayName || payment.riderName],

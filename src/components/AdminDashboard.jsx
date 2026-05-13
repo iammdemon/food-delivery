@@ -299,7 +299,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                     <div onClick={e => e.stopPropagation()} className="glass-card" style={{ width: '360px', padding: '2rem', textAlign: 'center' }}>
                         <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🧾</div>
                         <h3 style={{ marginBottom: '0.25rem' }}>Payment Receipt</h3>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>ফুড ক্যাটারিং বরিশাল</p>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Easy Food</p>
                         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
                             {[
                                 ['Rider', payReceipt.riderDisplayName || payReceipt.riderName],

@@ -22,7 +22,7 @@ const ReceiptModal = ({ order, onClose }) => {
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '1px dashed rgba(255,255,255,0.15)', paddingBottom: '1rem' }}>
                     <div style={{ fontSize: '2.5rem' }}>🧾</div>
                     <h3 style={{ margin: '0.25rem 0' }}>Order Receipt</h3>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ফুড ক্যাটারিং বরিশাল</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Easy Food</p>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem' }}>
                     {[

@@ -82,7 +82,7 @@ const Login = () => {
             <div className="glass-card animate-fade-in" style={{ width: '420px', textAlign: 'center' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🍱</div>
                 <h1 style={{ marginBottom: '0.25rem', fontSize: '1.8rem' }}>
-                    Welcome to <span style={{ color: 'var(--primary)' }}>Food Catering</span>
+                    Welcome to <span style={{ color: 'var(--primary)' }}>Easy Food</span>
                 </h1>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.95rem' }}>
                     {mode === 'signin' ? 'Sign in to access your dashboard' : 'Create a new account'}
