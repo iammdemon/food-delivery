@@ -29,7 +29,7 @@ const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balan
     {showTopUpModal && <TopUpModal onClose={() => setShowTopUpModal(false)} onSubmit={handleTopUpRequest} />}
     <header className="flex" style={{ justifyContent: 'space-between', marginBottom: '3rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.5rem' }}>ফুড ক্যাটারিং <span style={{ color: 'var(--primary)' }}>বরিশাল</span></h1>
+        <h1 style={{ fontSize: '2.5rem' }}>Easy <span style={{ color: 'var(--primary)' }}>Food</span></h1>
         <p style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           Welcome, <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.name}</span> ({title})
           {user?.customId && (

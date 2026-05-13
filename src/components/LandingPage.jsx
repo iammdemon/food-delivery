@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import toast from '../utils/toast';
 import API_BASE from '../api';
@@ -63,14 +63,14 @@ function Typewriter() {
     );
 }
 
-/* ── Section wrapper with slide-up reveal ───────────────────────────── */
+/* ── Reveal wrapper ─────────────────────────────────────────────────── */
 function Reveal({ children, delay = 0, style = {} }) {
     const [ref, visible] = useReveal();
     return (
         <div ref={ref} style={{
             opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(48px)',
-            transition: `opacity 0.7s ease ${delay}s, transform 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+            transform: visible ? 'translateY(0)' : 'translateY(40px)',
+            transition: `opacity 0.65s ease ${delay}s, transform 0.65s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
             ...style
         }}>
             {children}
@@ -85,10 +85,10 @@ const LandingPage = ({ onLoginClick }) => {
     const [scrolled, setScrolled] = useState(false);
     const [openFaq, setOpenFaq] = useState(null);
 
-    useEffect(() => { document.title = 'ফুড ক্যাটারিং বরিশাল'; }, []);
+    useEffect(() => { document.title = 'Easy Food — সেরা মিল ক্যাটারিং'; }, []);
 
     useEffect(() => {
-        const handler = () => setScrolled(window.scrollY > 50);
+        const handler = () => setScrolled(window.scrollY > 60);
         window.addEventListener('scroll', handler, { passive: true });
         return () => window.removeEventListener('scroll', handler);
     }, []);
@@ -125,262 +125,220 @@ const LandingPage = ({ onLoginClick }) => {
     const openModal = (pkg = 'monthly') => { setFormData(p => ({ ...p, package: pkg })); setShowModal(true); };
     const scrollTo = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-    const FOOD_FLOATERS = ['🍛', '🍱', '🥘', '🍲', '🥗', '🍚'];
     const STATS = [
         { n: 500, s: '+', label: 'সন্তুষ্ট সদস্য' },
-        { n: 30, s: 'K+', label: 'মিল ডেলিভারি' },
-        { n: 3, s: ' বছর', label: 'অভিজ্ঞতা' },
-        { n: 99, s: '%', label: 'সন্তুষ্টির হার' },
+        { n: 30,  s: 'K+', label: 'মিল ডেলিভারি' },
+        { n: 3,   s: ' বছর', label: 'অভিজ্ঞতা' },
+        { n: 99,  s: '%', label: 'সন্তুষ্টির হার' },
     ];
     const HOW = [
-        { step: '০১', icon: '📦', title: 'প্যাকেজ বাছাই', desc: 'আপনার প্রয়োজন অনুযায়ী সাপ্তাহিক বা মাসিক খাবারের প্যাকেজ সিলেক্ট করুন।' },
-        { step: '০২', icon: '✅', title: 'অর্ডার নিশ্চিত', desc: 'সহজ পেমেন্ট মেথড ব্যবহার করে আপনার সাবস্ক্রিপশন নিশ্চিত করুন।' },
-        { step: '০৩', icon: '🚴', title: 'ডেলিভারি', desc: 'নির্ধারিত সময়ে আপনার অফিস বা বাসায় পৌঁছে যাবে পুষ্টিকর গরম খাবার।' },
+        { step: '01', icon: '📦', title: 'প্যাকেজ বাছাই', desc: 'আপনার প্রয়োজন অনুযায়ী সাপ্তাহিক বা মাসিক খাবারের প্যাকেজ সিলেক্ট করুন।' },
+        { step: '02', icon: '✅', title: 'অর্ডার নিশ্চিত', desc: 'সহজ পেমেন্ট মেথড ব্যবহার করে আপনার সাবস্ক্রিপশন নিশ্চিত করুন।' },
+        { step: '03', icon: '🚴', title: 'ডেলিভারি', desc: 'নির্ধারিত সময়ে আপনার অফিস বা বাসায় পৌঁছে যাবে পুষ্টিকর গরম খাবার।' },
     ];
     const MENU_ITEMS = [
-        { name: 'চিকেন বিরিয়ানি', price: '৳ ২২০', img: '/images/hero.png', tag: 'বেস্ট সেলার', desc: 'সুগন্ধি পোলাও চালের সাথে ঝাল চিকেন ও ডিমের কম্বো।' },
-        { name: 'রুই মাছের ঝোল', price: '৳ ১৮০', img: '/images/ilish.png', tag: 'ঘরোয়া স্বাদ', desc: 'তাজা মাছের সাথে আলু-বেগুনের ঝোল এবং গরম ভাত।' },
-        { name: 'বিফ কারি লাঞ্চ', price: '৳ ২৪০', img: '/images/beef.png', tag: 'প্রিমিয়াম', desc: 'গরুর মাংসের সাথে মুগ ডাল এবং গরম ভাতের পরিপূর্ণ লাঞ্চ।' },
+        { name: 'চিকেন বিরিয়ানি', price: '৳ ২২০', img: '/images/hero.png',  tag: 'Best Seller', desc: 'সুগন্ধি পোলাও চালের সাথে ঝাল চিকেন ও ডিমের কম্বো।' },
+        { name: 'রুই মাছের ঝোল',   price: '৳ ১৮০', img: '/images/ilish.png', tag: 'ঘরোয়া স্বাদ', desc: 'তাজা মাছের সাথে আলু-বেগুনের ঝোল এবং গরম ভাত।' },
+        { name: 'বিফ কারি লাঞ্চ',   price: '৳ ২৪০', img: '/images/beef.png',  tag: 'Premium', desc: 'গরুর মাংসের সাথে মুগ ডাল এবং গরম ভাতের পরিপূর্ণ লাঞ্চ।' },
     ];
     const TESTIMONIALS = [
-        { name: 'রাফি হোসেন', role: 'সফটওয়্যার ইঞ্জিনিয়ার', text: 'রান্নার ঝামেলা থেকে মুক্তি! প্রতিদিন গরম, সুস্বাদু খাবার পাচ্ছি।', stars: 5 },
-        { name: 'সাদিয়া ইসলাম', role: 'মেডিকেল স্টুডেন্ট', text: 'হোস্টেলে থেকে এত ভালো খাবার পাওয়া সত্যিই অসাধারণ অভিজ্ঞতা।', stars: 5 },
-        { name: 'করিম সাহেব', role: 'ব্যবসায়ী', text: 'মিলের মান অত্যন্ত ভালো এবং ডেলিভারি সবসময় সময়মতো।', stars: 5 },
-        { name: 'নাফিসা বেগম', role: 'শিক্ষিকা', text: 'স্বাস্থ্যকর ও সুস্বাদু খাবার প্রতিদিন পাচ্ছি। সেরা সার্ভিস!', stars: 5 },
-        { name: 'জামাল উদ্দীন', role: 'সরকারি কর্মকর্তা', text: 'তিন মাস ধরে ব্যবহার করছি, একবারও হতাশ হইনি।', stars: 5 },
+        { name: 'রাফি হোসেন',   role: 'Software Engineer',     text: 'রান্নার ঝামেলা থেকে মুক্তি! Easy Food-এর মাধ্যমে প্রতিদিন গরম, সুস্বাদু খাবার পাচ্ছি।', stars: 5 },
+        { name: 'সাদিয়া ইসলাম', role: 'Medical Student',        text: 'হোস্টেলে থেকে Easy Food-এর মাধ্যমে এত ভালো খাবার পাওয়া সত্যিই অসাধারণ।', stars: 5 },
+        { name: 'করিম সাহেব',   role: 'Business Owner',         text: 'Easy Food-এর মিলের মান অত্যন্ত ভালো এবং ডেলিভারি সবসময় সময়মতো।', stars: 5 },
+        { name: 'নাফিসা বেগম',  role: 'Teacher',                text: 'স্বাস্থ্যকর ও সুস্বাদু খাবার প্রতিদিন পাচ্ছি। Easy Food সেরা সার্ভিস!', stars: 5 },
+        { name: 'জামাল উদ্দীন', role: 'Government Officer',     text: 'তিন মাস ধরে Easy Food ব্যবহার করছি, একবারও হতাশ হইনি।', stars: 5 },
     ];
     const FAQS = [
-        { q: 'খাবারের মান কেমন হবে?', a: 'আমরা ১০০% ফ্রেশ ও অর্গানিক উপাদান ব্যবহার করি। আপনার ঘরের খাবারের মতোই স্বাস্থ্যকর স্বাদ আমরা নিশ্চিত করি।' },
-        { q: 'ডেলিভারি চার্জ কত?', a: 'আমাদের মান্থলি ও উইকলি সব প্যাকেজেই ডেলিভারি একদম ফ্রি!' },
-        { q: 'কোনো কারণে মিল বন্ধ রাখা যাবে?', a: 'হ্যাঁ, ২৪ ঘণ্টা আগে জানালে সেই মিলটি আপনার একাউন্টে জমা থাকবে।' },
-        { q: 'মেনু কি প্রতিদিন একই থাকে?', a: 'না, আমরা প্রতিদিন ভিন্ন স্বাদের মেনু প্রদান করি যাতে একঘেয়েমি না আসে।' },
+        { q: 'খাবারের মান কেমন হবে?', a: 'Easy Food ১০০% ফ্রেশ ও অর্গানিক উপাদান ব্যবহার করে। আপনার ঘরের খাবারের মতোই স্বাস্থ্যকর স্বাদ আমরা নিশ্চিত করি।' },
+        { q: 'ডেলিভারি চার্জ কত?',    a: 'Easy Food-এর সব মান্থলি ও উইকলি প্যাকেজেই ডেলিভারি একদম ফ্রি!' },
+        { q: 'মিল বন্ধ রাখা যাবে?',    a: 'হ্যাঁ, ২৪ ঘণ্টা আগে জানালে সেই মিলটি আপনার একাউন্টে জমা থাকবে।' },
+        { q: 'মেনু কি প্রতিদিন একই?',  a: 'না, Easy Food প্রতিদিন ভিন্ন স্বাদের মেনু প্রদান করে যাতে একঘেয়েমি না আসে।' },
     ];
 
     return (
         <>
             <style>{`
-                @keyframes blink { 50% { opacity: 0; } }
-                @keyframes floatUp {
-                    0%   { transform: translateY(0) rotate(0deg);   opacity: 0.7; }
-                    100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
-                }
-                @keyframes orbPulse {
-                    0%, 100% { transform: scale(1);   opacity: 0.4; }
-                    50%       { transform: scale(1.2); opacity: 0.6; }
-                }
-                @keyframes marquee {
-                    0%   { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                @keyframes shimmer {
-                    0%   { background-position: -200% center; }
-                    100% { background-position:  200% center; }
-                }
-                @keyframes navSlideDown {
-                    from { opacity: 0; transform: translateY(-20px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes heroScale {
-                    from { opacity: 0; transform: scale(0.94); }
-                    to   { opacity: 1; transform: scale(1); }
-                }
-                @keyframes badgePop {
-                    0%   { opacity: 0; transform: scale(0.7) translateY(10px); }
-                    70%  { transform: scale(1.08) translateY(-2px); }
-                    100% { opacity: 1; transform: scale(1) translateY(0); }
-                }
-                .landing-floater {
-                    position: absolute;
-                    pointer-events: none;
-                    animation: floatUp linear infinite;
-                    will-change: transform;
-                }
+                @keyframes blink     { 50% { opacity: 0; } }
+                @keyframes orbFloat  { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
+                @keyframes marquee   { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+                @keyframes shimmer   { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+                @keyframes navDown   { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes heroIn    { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes badgePop  { 0% { opacity:0; transform:scale(0.8); } 100% { opacity:1; transform:scale(1); } }
+                @keyframes pulsering { 0% { box-shadow:0 0 0 0 rgba(249,115,22,0.5); } 70% { box-shadow:0 0 0 16px rgba(249,115,22,0); } 100% { box-shadow:0 0 0 0 rgba(249,115,22,0); } }
+                @keyframes gridFade  { from { opacity:0; } to { opacity:1; } }
+
                 .orb {
-                    position: absolute;
-                    border-radius: 50%;
-                    filter: blur(90px);
-                    pointer-events: none;
-                    animation: orbPulse ease-in-out infinite;
+                    position: absolute; border-radius: 50%;
+                    filter: blur(100px); pointer-events: none;
+                    animation: orbFloat ease-in-out infinite;
                 }
-                .marquee-track {
-                    display: flex;
-                    width: max-content;
-                    animation: marquee 28s linear infinite;
-                }
+                .marquee-track { display:flex; width:max-content; animation: marquee 30s linear infinite; }
                 .marquee-track:hover { animation-play-state: paused; }
-                .hero-content {
-                    animation: heroScale 1s cubic-bezier(0.22,1,0.36,1) 0.1s both;
-                }
-                .nav-anim { animation: navSlideDown 0.6s ease both; }
-                .badge-anim { animation: badgePop 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.5s both; }
                 .shimmer-text {
-                    background: linear-gradient(90deg, var(--primary) 25%, var(--secondary) 50%, var(--primary) 75%);
+                    background: linear-gradient(90deg, #fff 20%, var(--primary) 45%, var(--secondary) 55%, #fff 80%);
                     background-size: 200% auto;
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    animation: shimmer 3s linear infinite;
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                    animation: shimmer 4s linear infinite;
                 }
-                .step-card { transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease; }
-                .step-card:hover { transform: translateY(-12px) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.5) !important; }
-                .menu-card { transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease; overflow: hidden; }
-                .menu-card:hover { transform: translateY(-10px); box-shadow: 0 24px 50px rgba(0,0,0,0.5) !important; }
-                .menu-card:hover img { transform: scale(1.08); }
-                .menu-card img { transition: transform 0.6s ease; }
-                .faq-answer {
-                    overflow: hidden;
-                    transition: max-height 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease;
-                }
-                .pulse-btn {
-                    position: relative;
-                    overflow: hidden;
-                }
-                .pulse-btn::after {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    border-radius: inherit;
-                    box-shadow: 0 0 0 0 rgba(249,115,22,0.6);
-                    animation: pulsering 2.2s ease-out infinite;
-                }
-                @keyframes pulsering {
-                    0%   { box-shadow: 0 0 0 0 rgba(249,115,22,0.5); }
-                    70%  { box-shadow: 0 0 0 18px rgba(249,115,22,0); }
-                    100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
-                }
-                .social-icon { transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
-                .social-icon:hover { transform: translateY(-4px); border-color: var(--primary) !important; box-shadow: 0 8px 20px rgba(249,115,22,0.25); }
-                .nav-link { transition: color 0.25s ease; }
+                .nav-anim  { animation: navDown 0.5s ease both; }
+                .hero-anim { animation: heroIn 0.9s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+                .badge-anim { animation: badgePop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.4s both; }
+                .pulse-btn { position:relative; overflow:hidden; }
+                .pulse-btn::after { content:''; position:absolute; inset:0; border-radius:inherit; animation:pulsering 2.4s ease-out infinite; }
+                .faq-answer { overflow:hidden; transition: max-height 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease; }
+                .nav-link   { transition: color 0.2s ease; }
                 .nav-link:hover { color: white !important; }
+                .menu-card img { transition: transform 0.5s ease; }
+                .menu-card:hover img { transform: scale(1.05); }
+                .social-icon { transition: border-color 0.25s ease, background 0.25s ease; }
+                .social-icon:hover { border-color: var(--primary) !important; background: rgba(249,115,22,0.1) !important; }
+                .step-num { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             `}</style>
 
-            <div style={{ color: 'var(--text-main)', background: 'var(--charcoal)', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+            <div style={{ color: 'var(--text-main)', background: 'var(--charcoal)', minHeight: '100vh' }}>
 
-                {/* ── NAV ─────────────────────────────────────────────── */}
+                {/* ── NAV ───────────────────────────────────────────── */}
                 <nav className="nav-anim" style={{
                     position: 'fixed', top: 0, left: 0, right: 0,
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '1rem 8%',
-                    background: scrolled ? 'rgba(2,6,23,0.92)' : 'rgba(2,6,23,0.4)',
-                    backdropFilter: 'blur(20px)',
-                    borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+                    padding: '0.9rem 8%',
+                    background: scrolled ? 'rgba(13,17,23,0.95)' : 'transparent',
+                    backdropFilter: scrolled ? 'blur(24px)' : 'none',
+                    borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
                     zIndex: 1000,
-                    transition: 'background 0.4s ease, border-color 0.4s ease',
+                    transition: 'all 0.35s ease',
                 }}>
-                    <div style={{ fontSize: '1.7rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.7rem', fontFamily: "'Poppins', sans-serif" }}>
-                        <span style={{ filter: 'drop-shadow(0 0 12px rgba(249,115,22,0.5))', fontSize: '1.8rem' }}>🍱</span>
-                        <span style={{ color: 'var(--primary)' }}>ফুড ক্যাটারিং</span>
-                        <span style={{ color: 'white' }}>বরিশাল</span>
+                    {/* Logo */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <div style={{ width: 38, height: 38, background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 14px rgba(249,115,22,0.35)' }}>🍽️</div>
+                        <div style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: '1.4rem', lineHeight: 1 }}>
+                            <span style={{ color: 'white' }}>Easy</span><span style={{ color: 'var(--primary)' }}>Food</span>
+                        </div>
                     </div>
+
+                    {/* Nav links */}
                     <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }}>
-                        {[['how-it-works', 'প্রক্রিয়া'], ['menu', 'মেনু'], ['packages', 'প্যাকেজ']].map(([id, label]) => (
-                            <button key={id} className="nav-link" onClick={() => scrollTo(id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.95rem', padding: 0, cursor: 'pointer' }}>{label}</button>
+                        {[['how-it-works', 'How It Works'], ['menu', 'Menu'], ['packages', 'Pricing']].map(([id, label]) => (
+                            <button key={id} className="nav-link" onClick={() => scrollTo(id)}
+                                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', fontWeight: 500, fontSize: '0.9rem', padding: 0, cursor: 'pointer', letterSpacing: '0.01em' }}>
+                                {label}
+                            </button>
                         ))}
-                        <button onClick={onLoginClick} className="btn-primary" style={{ padding: '0.7rem 2rem', fontSize: '0.9rem' }}>লগইন</button>
+                        <button onClick={onLoginClick} className="btn-primary" style={{ padding: '0.6rem 1.6rem', fontSize: '0.88rem', fontWeight: 700 }}>
+                            Sign In
+                        </button>
                     </div>
                 </nav>
 
-                {/* ── HERO ────────────────────────────────────────────── */}
+                {/* ── HERO ──────────────────────────────────────────── */}
                 <header style={{
                     minHeight: '100vh', display: 'flex', flexDirection: 'column',
                     justifyContent: 'center', alignItems: 'center', textAlign: 'center',
-                    padding: '120px 2rem 60px', position: 'relative', overflow: 'hidden',
-                    background: 'linear-gradient(160deg, #020617 0%, #0f172a 50%, #1a0a00 100%)',
+                    padding: '130px 2rem 80px', position: 'relative', overflow: 'hidden',
+                    background: 'linear-gradient(170deg, #080c18 0%, #0d1117 40%, #130800 100%)',
                 }}>
-                    {/* Orbs */}
-                    <div className="orb" style={{ width: 600, height: 600, background: 'rgba(249,115,22,0.12)', top: '-15%', right: '-10%', animationDuration: '8s' }} />
-                    <div className="orb" style={{ width: 400, height: 400, background: 'rgba(245,158,11,0.08)', bottom: '-5%', left: '-8%', animationDuration: '11s', animationDelay: '2s' }} />
-                    <div className="orb" style={{ width: 250, height: 250, background: 'rgba(249,115,22,0.07)', top: '40%', left: '5%', animationDuration: '6s', animationDelay: '1s' }} />
+                    {/* Background orbs */}
+                    <div className="orb" style={{ width: 700, height: 700, background: 'rgba(249,115,22,0.09)', top: '-20%', right: '-15%', animationDuration: '10s' }} />
+                    <div className="orb" style={{ width: 500, height: 500, background: 'rgba(245,158,11,0.06)', bottom: '-10%', left: '-12%', animationDuration: '14s', animationDelay: '3s' }} />
+                    <div className="orb" style={{ width: 300, height: 300, background: 'rgba(139,92,246,0.05)', top: '35%', left: '8%', animationDuration: '8s', animationDelay: '1.5s' }} />
 
-                    {/* Floating food particles */}
-                    {FOOD_FLOATERS.map((emoji, i) => (
-                        <span key={i} className="landing-floater" style={{
-                            left: `${10 + i * 15}%`,
-                            bottom: `-5%`,
-                            fontSize: `${1.4 + (i % 3) * 0.5}rem`,
-                            animationDuration: `${8 + i * 2}s`,
-                            animationDelay: `${i * 1.3}s`,
-                        }}>{emoji}</span>
+                    {/* Dot grid */}
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '36px 36px', animation: 'gridFade 2s ease both', pointerEvents: 'none' }} />
+
+                    {/* Floating food emojis */}
+                    {['🍛','🍱','🥘','🍲','🥗','🍚'].map((e, i) => (
+                        <span key={i} style={{
+                            position: 'absolute', pointerEvents: 'none',
+                            left: `${8 + i * 15}%`, bottom: '-3%',
+                            fontSize: `${1.2 + (i % 3) * 0.4}rem`,
+                            opacity: 0.4,
+                            animation: `orbFloat ${9 + i * 2}s ease-in-out ${i * 1.2}s infinite`,
+                        }}>{e}</span>
                     ))}
 
-                    {/* Grid overlay */}
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
-
-                    <div className="hero-content" style={{ maxWidth: 1000, position: 'relative', zIndex: 1 }}>
+                    <div className="hero-anim" style={{ maxWidth: 960, position: 'relative', zIndex: 1 }}>
+                        {/* Live badge */}
                         <div className="badge-anim" style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
-                            padding: '0.55rem 1.4rem',
-                            background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)',
+                            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                            padding: '0.45rem 1.2rem',
+                            background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.25)',
                             color: 'var(--primary)', borderRadius: 50, fontWeight: 700,
-                            marginBottom: '2.2rem', fontSize: '0.88rem', letterSpacing: '0.06em', textTransform: 'uppercase',
+                            marginBottom: '2rem', fontSize: '0.82rem', letterSpacing: '0.07em',
                         }}>
-                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block', animation: 'pulsering 2s ease-out infinite' }} />
-                            এখন অর্ডার নিচ্ছি · বরিশাল সিটি
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block', animation: 'pulsering 2s ease-out infinite' }} />
+                            NOW ACCEPTING ORDERS · BARISAL
                         </div>
 
-                        <h1 style={{ fontSize: 'clamp(2.6rem,7vw,5rem)', fontWeight: 900, lineHeight: 1.08, fontFamily: "'Poppins', sans-serif", letterSpacing: '-0.04em', marginBottom: '1.6rem', color: 'white' }}>
+                        {/* Headline */}
+                        <h1 style={{ fontSize: 'clamp(2.8rem, 7vw, 5.2rem)', fontWeight: 900, lineHeight: 1.06, fontFamily: "'Poppins', sans-serif", letterSpacing: '-0.04em', marginBottom: '1.4rem', color: 'white' }}>
                             <Typewriter /> থেকে<br />
                             <span className="shimmer-text">মুক্তি পান আজই!</span>
                         </h1>
 
-                        <p style={{ fontSize: 'clamp(1rem,2.5vw,1.25rem)', color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: 700, margin: '0 auto 3rem' }}>
-                            অফিসগামী বা শিক্ষার্থীদের জন্য সেরা মান্থলি মিল ক্যাটারিং। বাজারের চিন্তা আর রান্নার ক্লান্তি ছাড়াই উপভোগ করুন স্বাস্থ্যসম্মত ঘরোয়া খাবার।
+                        {/* Sub */}
+                        <p style={{ fontSize: 'clamp(1rem, 2.2vw, 1.2rem)', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, maxWidth: 640, margin: '0 auto 2.8rem' }}>
+                            Easy Food — অফিসগামী ও শিক্ষার্থীদের জন্য সেরা মান্থলি মিল ক্যাটারিং।<br />
+                            বাজারের চিন্তা ও রান্নার ক্লান্তি ছাড়াই উপভোগ করুন স্বাস্থ্যসম্মত গরম খাবার।
                         </p>
 
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.2rem', flexWrap: 'wrap' }}>
-                            <button onClick={() => openModal()} className="btn-primary pulse-btn" style={{ padding: '1.1rem 3rem', fontSize: '1.05rem', fontWeight: 700 }}>
+                        {/* CTAs */}
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                            <button onClick={() => openModal()} className="btn-primary pulse-btn"
+                                style={{ padding: '1rem 2.8rem', fontSize: '1rem', fontWeight: 700, borderRadius: 50 }}>
                                 মেম্বারশিপ শুরু করুন ✦
                             </button>
-                            <button onClick={() => scrollTo('packages')} className="btn-outline" style={{ padding: '1.1rem 3rem', fontSize: '1.05rem', fontWeight: 600, backdropFilter: 'blur(10px)' }}>
+                            <button onClick={() => scrollTo('packages')} className="btn-outline"
+                                style={{ padding: '1rem 2.8rem', fontSize: '1rem', fontWeight: 600, borderRadius: 50, backdropFilter: 'blur(10px)' }}>
                                 প্ল্যানগুলো দেখুন
                             </button>
                         </div>
 
-                        {/* Scroll indicator */}
-                        <div style={{ marginTop: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', opacity: 0.45 }}>
-                            <span style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>স্ক্রোল করুন</span>
-                            <div style={{ width: 1, height: 40, background: 'linear-gradient(to bottom, white, transparent)' }} />
+                        {/* Scroll hint */}
+                        <div style={{ marginTop: '4.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', opacity: 0.3 }}>
+                            <span style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase' }}>scroll</span>
+                            <div style={{ width: 1, height: 36, background: 'linear-gradient(to bottom, white, transparent)' }} />
                         </div>
                     </div>
                 </header>
 
-                {/* ── STATS ───────────────────────────────────────────── */}
-                <section style={{ padding: '5rem 2rem', background: 'var(--deep-dark)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                    <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '2rem', textAlign: 'center' }}>
+                {/* ── TRUST BAR / STATS ─────────────────────────────── */}
+                <section style={{ padding: '5rem 2rem', background: '#080c18', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
                         {STATS.map(({ n, s, label }, i) => (
                             <Reveal key={i} delay={i * 0.1}>
-                                <div style={{ padding: '2rem 1rem' }}>
-                                    <div style={{ fontSize: 'clamp(2.2rem,5vw,3rem)', fontWeight: 900, fontFamily: "'Poppins',sans-serif", color: 'var(--primary)', lineHeight: 1 }}>
+                                <div style={{ textAlign: 'center', padding: '2rem 1rem', borderRight: i < STATS.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                                    <div style={{ fontSize: 'clamp(2.2rem,5vw,3rem)', fontWeight: 900, fontFamily: "'Poppins',sans-serif", background: 'linear-gradient(135deg, var(--primary), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1 }}>
                                         <Counter target={n} suffix={s} />
                                     </div>
-                                    <p style={{ color: 'var(--text-muted)', marginTop: '0.6rem', fontSize: '0.95rem' }}>{label}</p>
+                                    <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.6rem', fontSize: '0.88rem', letterSpacing: '0.02em' }}>{label}</p>
                                 </div>
                             </Reveal>
                         ))}
                     </div>
                 </section>
 
-                {/* ── HOW IT WORKS ────────────────────────────────────── */}
+                {/* ── HOW IT WORKS ──────────────────────────────────── */}
                 <section id="how-it-works" style={{ padding: '9rem 2rem', background: 'var(--charcoal)', position: 'relative', overflow: 'hidden' }}>
-                    <div className="orb" style={{ width: 500, height: 500, background: 'rgba(249,115,22,0.05)', top: '-10%', right: '-8%', animationDuration: '10s' }} />
+                    <div className="orb" style={{ width: 600, height: 600, background: 'rgba(249,115,22,0.04)', top: '-10%', right: '-10%', animationDuration: '12s' }} />
                     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
                         <Reveal style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                            <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>কিভাবে কাজ করে</p>
-                            <h2 style={{ fontSize: 'clamp(2rem,5vw,3.2rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
+                            <span style={{ display: 'inline-block', color: 'var(--primary)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1rem', background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', padding: '0.35rem 1rem', borderRadius: 50 }}>How It Works</span>
+                            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif", marginBottom: '1rem' }}>
                                 মাত্র তিনটি ধাপে <span style={{ color: 'var(--primary)' }}>শুরু করুন</span>
                             </h2>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: 560, margin: '1rem auto 0' }}>অর্ডার থেকে ডেলিভারি — পুরো প্রক্রিয়াটি একদম সহজ।</p>
+                            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1rem', maxWidth: 500, margin: '0 auto' }}>অর্ডার থেকে ডেলিভারি — Easy Food-এর পুরো প্রক্রিয়াটি একদম সহজ।</p>
                         </Reveal>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '2rem', position: 'relative' }}>
-                            {/* connector line */}
-                            <div style={{ position: 'absolute', top: '80px', left: '25%', right: '25%', height: 2, background: 'linear-gradient(90deg, transparent, rgba(249,115,22,0.3), transparent)', pointerEvents: 'none' }} />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                             {HOW.map((item, i) => (
-                                <Reveal key={i} delay={i * 0.15}>
-                                    <div className="step-card glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'center', position: 'relative' }}>
-                                        <div style={{ position: 'absolute', top: '-1px', left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,var(--primary),var(--secondary))', color: 'white', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.15em', padding: '0.3rem 1rem', borderRadius: '0 0 12px 12px', textTransform: 'uppercase' }}>ধাপ {item.step}</div>
-                                        <div style={{ width: 80, height: 80, background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.4rem', margin: '0.5rem auto 2rem' }}>{item.icon}</div>
-                                        <h3 style={{ fontSize: '1.5rem', color: 'white', fontWeight: 700, marginBottom: '1rem' }}>{item.title}</h3>
-                                        <p style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>{item.desc}</p>
+                                <Reveal key={i} delay={i * 0.12}>
+                                    <div className="glass-card" style={{ padding: '3rem 2.5rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                                        {/* Step number */}
+                                        <div className="step-num" style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: "'Poppins',sans-serif", lineHeight: 1, marginBottom: '1.5rem' }}>{item.step}</div>
+                                        <div style={{ width: 64, height: 64, background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.18)', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.5rem' }}>{item.icon}</div>
+                                        <h3 style={{ fontSize: '1.35rem', color: 'white', fontWeight: 700, marginBottom: '0.8rem' }}>{item.title}</h3>
+                                        <p style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, fontSize: '0.93rem' }}>{item.desc}</p>
                                     </div>
                                 </Reveal>
                             ))}
@@ -388,33 +346,33 @@ const LandingPage = ({ onLoginClick }) => {
                     </div>
                 </section>
 
-                {/* ── MENU PREVIEW ────────────────────────────────────── */}
-                <section id="menu" style={{ padding: '9rem 2rem', background: 'var(--deep-dark)' }}>
+                {/* ── MENU PREVIEW ──────────────────────────────────── */}
+                <section id="menu" style={{ padding: '9rem 2rem', background: '#080c18' }}>
                     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
                         <Reveal style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                            <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>আমাদের মেনু</p>
-                            <h2 style={{ fontSize: 'clamp(2rem,5vw,3.2rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
+                            <span style={{ display: 'inline-block', color: 'var(--primary)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1rem', background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', padding: '0.35rem 1rem', borderRadius: 50 }}>Our Menu</span>
+                            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif", marginBottom: '1rem' }}>
                                 জনপ্রিয় <span style={{ color: 'var(--primary)' }}>খাবার</span> সমূহ
                             </h2>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginTop: '1rem' }}>আমাদের মেম্বারদের পছন্দের তালিকার সেরা কয়েকটি মেনু।</p>
+                            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1rem' }}>Easy Food-এর মেম্বারদের পছন্দের তালিকার সেরা কয়েকটি মেনু।</p>
                         </Reveal>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '2.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                             {MENU_ITEMS.map((item, i) => (
-                                <Reveal key={i} delay={i * 0.12}>
-                                    <div className="menu-card glass-card" style={{ padding: 0, border: '1px solid rgba(255,255,255,0.06)' }}>
-                                        <div style={{ height: 240, position: 'relative', overflow: 'hidden', borderRadius: '24px 24px 0 0' }}>
+                                <Reveal key={i} delay={i * 0.1}>
+                                    <div className="menu-card glass-card" style={{ padding: 0, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                                        <div style={{ height: 220, position: 'relative', overflow: 'hidden' }}>
                                             <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(2,6,23,0.6) 0%, transparent 60%)' }} />
-                                            <span style={{ position: 'absolute', top: 16, left: 16, background: 'rgba(249,115,22,0.9)', backdropFilter: 'blur(8px)', color: 'white', padding: '0.35rem 1rem', borderRadius: 50, fontWeight: 700, fontSize: '0.78rem' }}>{item.tag}</span>
+                                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,12,24,0.7) 0%, transparent 55%)' }} />
+                                            <span style={{ position: 'absolute', top: 14, left: 14, background: 'linear-gradient(135deg,var(--primary),var(--secondary))', color: 'white', padding: '0.3rem 0.9rem', borderRadius: 50, fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.04em' }}>{item.tag}</span>
                                         </div>
-                                        <div style={{ padding: '2rem' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.8rem' }}>
-                                                <h3 style={{ fontSize: '1.35rem', color: 'white', fontWeight: 700 }}>{item.name}</h3>
-                                                <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.3rem', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>{item.price}</span>
+                                        <div style={{ padding: '1.75rem 2rem 2rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.7rem' }}>
+                                                <h3 style={{ fontSize: '1.25rem', color: 'white', fontWeight: 700 }}>{item.name}</h3>
+                                                <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.2rem', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>{item.price}</span>
                                             </div>
-                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.65, marginBottom: '1.5rem' }}>{item.desc}</p>
-                                            <button onClick={() => openModal()} className="btn-outline" style={{ width: '100%', padding: '0.85rem', fontSize: '0.95rem' }}>এই খাবারটি বুক করুন</button>
+                                            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.88rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>{item.desc}</p>
+                                            <button onClick={() => openModal()} className="btn-outline" style={{ width: '100%', padding: '0.8rem', fontSize: '0.9rem' }}>এই খাবারটি বুক করুন</button>
                                         </div>
                                     </div>
                                 </Reveal>
@@ -423,25 +381,29 @@ const LandingPage = ({ onLoginClick }) => {
                     </div>
                 </section>
 
-                {/* ── TESTIMONIALS MARQUEE ────────────────────────────── */}
+                {/* ── TESTIMONIALS ──────────────────────────────────── */}
                 <section style={{ padding: '7rem 0', background: 'var(--charcoal)', overflow: 'hidden' }}>
                     <Reveal style={{ textAlign: 'center', marginBottom: '4rem', padding: '0 2rem' }}>
-                        <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>রিভিউ</p>
-                        <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
-                            আমাদের <span style={{ color: 'var(--primary)' }}>সদস্যরা</span> বলেন
+                        <span style={{ display: 'inline-block', color: 'var(--primary)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1rem', background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', padding: '0.35rem 1rem', borderRadius: 50 }}>Reviews</span>
+                        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
+                            Easy Food সম্পর্কে <span style={{ color: 'var(--primary)' }}>সদস্যরা বলেন</span>
                         </h2>
                     </Reveal>
                     <div style={{ overflow: 'hidden' }}>
                         <div className="marquee-track">
                             {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
-                                <div key={i} className="glass-card" style={{ flexShrink: 0, width: 320, margin: '0 1rem', padding: '2rem', border: '1px solid rgba(255,255,255,0.06)' }}>
-                                    <div style={{ color: 'var(--secondary)', fontSize: '1.1rem', marginBottom: '1rem' }}>{'★'.repeat(t.stars)}</div>
-                                    <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, marginBottom: '1.5rem', fontSize: '0.95rem' }}>"{t.text}"</p>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,var(--primary),var(--secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem', color: 'white' }}>{t.name[0]}</div>
+                                <div key={i} style={{
+                                    flexShrink: 0, width: 320, margin: '0 0.75rem',
+                                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                                    borderRadius: 16, padding: '1.75rem',
+                                }}>
+                                    <div style={{ color: 'var(--secondary)', fontSize: '1rem', marginBottom: '1rem', letterSpacing: '0.05em' }}>{'★'.repeat(t.stars)}</div>
+                                    <p style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, marginBottom: '1.5rem', fontSize: '0.9rem' }}>"{t.text}"</p>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                        <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'linear-gradient(135deg,var(--primary),var(--secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', color: 'white', flexShrink: 0 }}>{t.name[0]}</div>
                                         <div>
-                                            <div style={{ fontWeight: 700, color: 'white', fontSize: '0.9rem' }}>{t.name}</div>
-                                            <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{t.role}</div>
+                                            <div style={{ fontWeight: 700, color: 'white', fontSize: '0.88rem' }}>{t.name}</div>
+                                            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.76rem' }}>{t.role}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -450,88 +412,104 @@ const LandingPage = ({ onLoginClick }) => {
                     </div>
                 </section>
 
-                {/* ── PACKAGES ────────────────────────────────────────── */}
-                <section id="packages" style={{ padding: '9rem 2rem', background: 'var(--deep-dark)' }}>
-                    <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+                {/* ── PACKAGES / PRICING ────────────────────────────── */}
+                <section id="packages" style={{ padding: '9rem 2rem', background: '#080c18' }}>
+                    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
                         <Reveal style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                            <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>প্রাইসিং</p>
-                            <h2 style={{ fontSize: 'clamp(2rem,5vw,3.2rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
-                                মিল <span style={{ color: 'var(--primary)' }}>সাবস্ক্রিপশন</span>
+                            <span style={{ display: 'inline-block', color: 'var(--primary)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1rem', background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', padding: '0.35rem 1rem', borderRadius: 50 }}>Pricing</span>
+                            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif", marginBottom: '1rem' }}>
+                                Easy Food <span style={{ color: 'var(--primary)' }}>Subscription</span>
                             </h2>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginTop: '1rem' }}>সাশ্রয়ী মূল্যে আপনার পছন্দের প্ল্যানটি নির্বাচন করুন।</p>
+                            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1rem' }}>সাশ্রয়ী মূল্যে আপনার পছন্দের প্ল্যানটি নির্বাচন করুন।</p>
                         </Reveal>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,450px))', gap: '2.5rem', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 430px))', gap: '2rem', justifyContent: 'center', alignItems: 'center' }}>
                             {/* Weekly */}
                             <Reveal delay={0}>
-                                <div className="glass-card" style={{ padding: '3.5rem 3rem', textAlign: 'center', border: '1px solid rgba(255,255,255,0.07)' }}>
-                                    <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📅</div>
-                                    <h3 style={{ fontSize: '1.6rem', color: 'white', fontWeight: 700, marginBottom: '0.5rem' }}>সাপ্তাহিক ট্রায়াল</h3>
-                                    <div style={{ fontSize: '3rem', fontWeight: 900, color: 'white', margin: '1.2rem 0', fontFamily: "'Poppins',sans-serif" }}>৳ ১৪০০<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 400 }}> / সপ্তাহ</span></div>
+                                <div className="glass-card" style={{ padding: '3rem 2.5rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                    <div style={{ width: 56, height: 56, background: 'rgba(255,255,255,0.06)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', margin: '0 auto 1.5rem' }}>📅</div>
+                                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Trial Plan</p>
+                                    <h3 style={{ fontSize: '1.5rem', color: 'white', fontWeight: 700, marginBottom: '0.3rem' }}>সাপ্তাহিক</h3>
+                                    <div style={{ margin: '1.5rem 0 2rem' }}>
+                                        <span style={{ fontSize: '3rem', fontWeight: 900, color: 'white', fontFamily: "'Poppins',sans-serif" }}>৳ ১৪০০</span>
+                                        <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.9rem' }}> / সপ্তাহ</span>
+                                    </div>
                                     <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left', marginBottom: '2.5rem' }}>
                                         {['৭ দিন ডাবল মিল (লাঞ্চ ও ডিনার)', 'পরিচ্ছন্ন ও স্বাস্থ্যকর প্যাকিং', 'ফ্রি ডেলিভারি', 'সাপ্তাহিক মেনু কাস্টমাইজেশন'].map((f, i) => (
-                                            <li key={i} style={{ display: 'flex', gap: '0.8rem', alignItems: 'flex-start', marginBottom: '0.9rem', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                                                <span style={{ color: 'var(--primary)', marginTop: '2px', flexShrink: 0 }}>✦</span>{f}
+                                            <li key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', marginBottom: '0.85rem', color: 'rgba(255,255,255,0.55)', fontSize: '0.9rem' }}>
+                                                <span style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '2px' }}>✓</span>{f}
                                             </li>
                                         ))}
                                     </ul>
-                                    <button onClick={() => openModal('weekly')} className="btn-outline" style={{ width: '100%', padding: '1.1rem', fontSize: '1rem' }}>ট্রায়াল শুরু করুন</button>
+                                    <button onClick={() => openModal('weekly')} className="btn-outline" style={{ width: '100%', padding: '1rem', fontSize: '0.95rem', fontWeight: 600 }}>ট্রায়াল শুরু করুন</button>
                                 </div>
                             </Reveal>
 
-                            {/* Monthly - featured */}
-                            <Reveal delay={0.12}>
-                                <div className="glass-card orange-glow" style={{ padding: '4.5rem 3.5rem', textAlign: 'center', background: 'rgba(249,115,22,0.04)', border: '2px solid var(--primary)', position: 'relative', transform: 'scale(1.04)' }}>
-                                    <div style={{ position: 'absolute', top: -18, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,var(--primary),var(--secondary))', color: 'white', padding: '0.5rem 2rem', borderRadius: 50, fontWeight: 800, fontSize: '0.82rem', letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>⭐ সেরা অফার</div>
-                                    <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏆</div>
-                                    <h3 style={{ fontSize: '1.8rem', color: 'white', fontWeight: 800, marginBottom: '0.5rem' }}>প্রফেশনাল মান্থলি</h3>
-                                    <div style={{ fontSize: '3.5rem', fontWeight: 900, color: 'white', margin: '1.2rem 0', fontFamily: "'Poppins',sans-serif" }}>৳ ৫০০০<span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 400 }}> / মাস</span></div>
-                                    <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left', marginBottom: '3rem' }}>
+                            {/* Monthly — featured */}
+                            <Reveal delay={0.1}>
+                                <div style={{
+                                    padding: '3.5rem 2.5rem', textAlign: 'center', position: 'relative',
+                                    background: 'linear-gradient(160deg, rgba(249,115,22,0.1) 0%, rgba(245,158,11,0.05) 100%)',
+                                    border: '2px solid rgba(249,115,22,0.45)',
+                                    borderRadius: 'var(--card-radius)',
+                                    boxShadow: '0 0 40px rgba(249,115,22,0.12)',
+                                }}>
+                                    <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,var(--primary),var(--secondary))', color: 'white', padding: '0.4rem 1.6rem', borderRadius: 50, fontWeight: 800, fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>⭐ Best Value</div>
+                                    <div style={{ width: 56, height: 56, background: 'rgba(249,115,22,0.15)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', margin: '0.5rem auto 1.5rem' }}>🏆</div>
+                                    <p style={{ color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Most Popular</p>
+                                    <h3 style={{ fontSize: '1.6rem', color: 'white', fontWeight: 800, marginBottom: '0.3rem' }}>প্রফেশনাল মান্থলি</h3>
+                                    <div style={{ margin: '1.5rem 0 2rem' }}>
+                                        <span style={{ fontSize: '3.2rem', fontWeight: 900, color: 'white', fontFamily: "'Poppins',sans-serif" }}>৳ ৫০০০</span>
+                                        <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.9rem' }}> / মাস</span>
+                                    </div>
+                                    <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left', marginBottom: '2.5rem' }}>
                                         {['৩০ দিন নিরবচ্ছিন্ন সার্ভিস', 'মাছের ৩টি ও মাংসের ৩টি আইটেম', 'ডাল, সবজি ও সালাদ প্রতিদিন', '২৪/৭ কাস্টমার সাপোর্ট'].map((f, i) => (
-                                            <li key={i} style={{ display: 'flex', gap: '0.8rem', alignItems: 'flex-start', marginBottom: '0.9rem', color: 'white', fontSize: '1rem' }}>
-                                                <span style={{ color: 'var(--primary)', marginTop: '2px', flexShrink: 0 }}>✦</span>{f}
+                                            <li key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', marginBottom: '0.85rem', color: 'rgba(255,255,255,0.8)', fontSize: '0.93rem' }}>
+                                                <span style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '2px' }}>✓</span>{f}
                                             </li>
                                         ))}
                                     </ul>
-                                    <button onClick={() => openModal('monthly')} className="btn-primary pulse-btn" style={{ width: '100%', padding: '1.3rem', fontSize: '1.1rem', fontWeight: 800 }}>সাবস্ক্রিপশন নিন</button>
+                                    <button onClick={() => openModal('monthly')} className="btn-primary pulse-btn" style={{ width: '100%', padding: '1.1rem', fontSize: '1rem', fontWeight: 800 }}>সাবস্ক্রিপশন নিন</button>
                                 </div>
                             </Reveal>
                         </div>
                     </div>
                 </section>
 
-                {/* ── CTA BANNER ──────────────────────────────────────── */}
-                <section style={{ padding: '7rem 2rem', background: 'linear-gradient(135deg,rgba(249,115,22,0.15) 0%,rgba(245,158,11,0.1) 100%)', borderTop: '1px solid rgba(249,115,22,0.15)', borderBottom: '1px solid rgba(249,115,22,0.15)' }}>
-                    <Reveal style={{ textAlign: 'center' }}>
-                        <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif", marginBottom: '1rem' }}>
-                            আজই শুরু করুন — <span style={{ color: 'var(--primary)' }}>প্রথম সপ্তাহ বিনামূল্যে!</span>
+                {/* ── CTA BANNER ────────────────────────────────────── */}
+                <section style={{ padding: '7rem 2rem', background: 'var(--charcoal)', position: 'relative', overflow: 'hidden' }}>
+                    <div className="orb" style={{ width: 500, height: 500, background: 'rgba(249,115,22,0.08)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', animationDuration: '8s' }} />
+                    <Reveal style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif", marginBottom: '1rem' }}>
+                            আজই Easy Food-এ যোগ দিন —<br />
+                            <span style={{ color: 'var(--primary)' }}>প্রথম সপ্তাহ বিনামূল্যে!</span>
                         </h2>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '2.5rem' }}>কোনো ঝামেলা নেই, যেকোনো সময় বাতিল করুন।</p>
-                        <button onClick={() => openModal()} className="btn-primary pulse-btn" style={{ padding: '1.2rem 3.5rem', fontSize: '1.1rem', fontWeight: 700 }}>
+                        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1rem', marginBottom: '2.5rem' }}>কোনো ঝামেলা নেই। যেকোনো সময় বাতিল করুন।</p>
+                        <button onClick={() => openModal()} className="btn-primary pulse-btn" style={{ padding: '1.1rem 3.2rem', fontSize: '1rem', fontWeight: 700 }}>
                             বিনামূল্যে শুরু করুন →
                         </button>
                     </Reveal>
                 </section>
 
-                {/* ── FAQ ─────────────────────────────────────────────── */}
-                <section style={{ padding: '9rem 2rem', background: 'var(--charcoal)' }}>
-                    <div style={{ maxWidth: 800, margin: '0 auto' }}>
+                {/* ── FAQ ───────────────────────────────────────────── */}
+                <section style={{ padding: '9rem 2rem', background: '#080c18' }}>
+                    <div style={{ maxWidth: 720, margin: '0 auto' }}>
                         <Reveal style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                            <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>FAQ</p>
-                            <h2 style={{ fontSize: 'clamp(2rem,4vw,2.8rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
+                            <span style={{ display: 'inline-block', color: 'var(--primary)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '1rem', background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', padding: '0.35rem 1rem', borderRadius: 50 }}>FAQ</span>
+                            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 2.6rem)', fontWeight: 800, color: 'white', fontFamily: "'Poppins',sans-serif" }}>
                                 সাধারণ <span style={{ color: 'var(--primary)' }}>জিজ্ঞাসা</span>
                             </h2>
                         </Reveal>
-                        <div style={{ display: 'grid', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gap: '0.75rem' }}>
                             {FAQS.map((item, i) => (
-                                <Reveal key={i} delay={i * 0.08}>
-                                    <div className="glass-card" style={{ padding: '1.5rem 2rem', cursor: 'pointer', border: openFaq === i ? '1px solid rgba(249,115,22,0.35)' : '1px solid var(--glass-border)', transition: 'border-color 0.3s ease' }} onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                                <Reveal key={i} delay={i * 0.07}>
+                                    <div onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ padding: '1.4rem 1.75rem', cursor: 'pointer', background: 'rgba(255,255,255,0.03)', border: openFaq === i ? '1px solid rgba(249,115,22,0.3)' : '1px solid rgba(255,255,255,0.07)', borderRadius: 14, transition: 'border-color 0.25s ease, background 0.25s ease', background: openFaq === i ? 'rgba(249,115,22,0.04)' : 'rgba(255,255,255,0.03)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span style={{ fontWeight: 700, color: 'white', fontSize: '1.05rem' }}>{item.q}</span>
-                                            <span style={{ color: 'var(--primary)', fontSize: '1.4rem', transition: 'transform 0.35s ease', transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)', flexShrink: 0, marginLeft: '1rem' }}>+</span>
+                                            <span style={{ fontWeight: 600, color: 'white', fontSize: '0.98rem' }}>{item.q}</span>
+                                            <span style={{ color: 'var(--primary)', fontSize: '1.3rem', transition: 'transform 0.3s ease', transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)', flexShrink: 0, marginLeft: '1rem' }}>+</span>
                                         </div>
                                         <div className="faq-answer" style={{ maxHeight: openFaq === i ? '200px' : '0', opacity: openFaq === i ? 1 : 0 }}>
-                                            <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, paddingTop: '1.2rem', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: '1.2rem' }}>{item.a}</p>
+                                            <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, paddingTop: '1rem', marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '0.9rem' }}>{item.a}</p>
                                         </div>
                                     </div>
                                 </Reveal>
@@ -540,81 +518,89 @@ const LandingPage = ({ onLoginClick }) => {
                     </div>
                 </section>
 
-                {/* ── FOOTER ──────────────────────────────────────────── */}
-                <footer style={{ padding: '7rem 2rem 3rem', background: 'var(--deep-dark)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                {/* ── FOOTER ────────────────────────────────────────── */}
+                <footer style={{ padding: '6rem 2rem 3rem', background: '#05070f', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '4rem', marginBottom: '5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '3.5rem', marginBottom: '4rem' }}>
+                            {/* Brand */}
                             <div>
-                                <div style={{ fontSize: '1.7rem', fontWeight: 900, marginBottom: '1.5rem', fontFamily: "'Poppins',sans-serif" }}>
-                                    <span style={{ filter: 'drop-shadow(0 0 10px rgba(249,115,22,0.4))' }}>🍱</span>
-                                    <span style={{ marginLeft: '0.6rem' }}>প্রিমিয়াম <span style={{ color: 'var(--primary)' }}>ক্যাটারিং</span></span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
+                                    <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,var(--primary),var(--secondary))', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>🍽️</div>
+                                    <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: '1.3rem' }}>
+                                        <span style={{ color: 'white' }}>Easy</span><span style={{ color: 'var(--primary)' }}>Food</span>
+                                    </div>
                                 </div>
-                                <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, marginBottom: '2rem', fontSize: '0.95rem' }}>আমরা দিচ্ছি মায়ের হাতের রান্নার স্বাদে সেরা মান্থলি মিল ক্যাটারিং সার্ভিস।</p>
-                                <div style={{ display: 'flex', gap: '0.9rem' }}>
+                                <p style={{ color: 'rgba(255,255,255,0.35)', lineHeight: 1.8, marginBottom: '1.8rem', fontSize: '0.88rem' }}>আমরা দিচ্ছি মায়ের হাতের রান্নার স্বাদে সেরা মান্থলি মিল ক্যাটারিং সার্ভিস।</p>
+                                <div style={{ display: 'flex', gap: '0.75rem' }}>
                                     {['📘', '📸', '🐦', '🔗'].map((icon, i) => (
-                                        <div key={i} className="social-icon" style={{ width: 42, height: 42, background: 'rgba(255,255,255,0.04)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.06)' }}>{icon}</div>
+                                        <div key={i} className="social-icon" style={{ width: 38, height: 38, background: 'rgba(255,255,255,0.04)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.07)' }}>{icon}</div>
                                     ))}
                                 </div>
                             </div>
+                            {/* Nav */}
                             <div>
-                                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'white' }}>ন্যাভিগেশন</h4>
+                                <h4 style={{ fontSize: '0.78rem', fontWeight: 700, marginBottom: '1.4rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.5)' }}>Company</h4>
                                 <ul style={{ listStyle: 'none', padding: 0 }}>
                                     {['সহযোগিতা', 'মেম্বার সুবিধা', 'প্রাইভেসি পলিসি', 'শর্তাবলী'].map((l, i) => (
-                                        <li key={i} className="nav-link" style={{ marginBottom: '1rem', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.95rem' }}>{l}</li>
+                                        <li key={i} className="nav-link" style={{ marginBottom: '0.9rem', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', fontSize: '0.9rem' }}>{l}</li>
                                     ))}
                                 </ul>
                             </div>
+                            {/* Contact */}
                             <div>
-                                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'white' }}>যোগাযোগ</h4>
+                                <h4 style={{ fontSize: '0.78rem', fontWeight: 700, marginBottom: '1.4rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'rgba(255,255,255,0.5)' }}>Contact</h4>
                                 <ul style={{ listStyle: 'none', padding: 0 }}>
-                                    {[['📍', 'সদর রোড, বরিশাল'], ['📞', '+৮৮০ ১৭০০-বরিশাল'], ['✉️', 'info@cateringbarisal.com']].map(([icon, val], i) => (
-                                        <li key={i} style={{ display: 'flex', gap: '0.8rem', marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '0.95rem' }}><span>{icon}</span>{val}</li>
+                                    {[['📍', 'সদর রোড, বরিশাল'], ['📞', '+৮৮০ ১৭০০-বরিশাল'], ['✉️', 'info@easyfood.com.bd']].map(([icon, val], i) => (
+                                        <li key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.9rem', color: 'rgba(255,255,255,0.35)', fontSize: '0.9rem', alignItems: 'center' }}><span>{icon}</span>{val}</li>
                                     ))}
                                 </ul>
                             </div>
                         </div>
-                        <div style={{ textAlign: 'center', paddingTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-                            © ২০২৬ ফুড ক্যাটারিং বরিশাল · সেরা স্বাদের নিশ্চয়তা
+                        <div style={{ textAlign: 'center', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>
+                            © 2026 Easy Food · সেরা স্বাদের নিশ্চয়তা · Made with ❤️ in Barisal
                         </div>
                     </div>
                 </footer>
             </div>
 
-            {/* ── SUBSCRIPTION MODAL ──────────────────────────────────── */}
+            {/* ── SUBSCRIPTION MODAL ──────────────────────────────── */}
             {showModal && (
-                <div onClick={() => setShowModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(2,6,23,0.88)', backdropFilter: 'blur(16px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'fadeInOverlay 0.25s ease' }}>
-                    <div onClick={e => e.stopPropagation()} className="glass-card animate-pop-in" style={{ background: 'var(--charcoal)', padding: '3rem', width: '100%', maxWidth: 580, position: 'relative', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: 24, right: 24, background: 'rgba(255,255,255,0.06)', color: 'white', width: 38, height: 38, borderRadius: '50%', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
-                        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🍱</div>
-                            <h3 style={{ fontSize: '2rem', color: 'white', fontWeight: 900, fontFamily: "'Poppins',sans-serif" }}>এলিট ক্লাবে যোগ দিন</h3>
-                            <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>আপনার তথ্য প্রদান করে যাত্রা শুরু করুন।</p>
+                <div onClick={() => setShowModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(5,7,15,0.92)', backdropFilter: 'blur(20px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'fadeInOverlay 0.2s ease' }}>
+                    <div onClick={e => e.stopPropagation()} className="glass-card animate-pop-in" style={{ background: '#0d1117', padding: '2.5rem', width: '100%', maxWidth: 560, position: 'relative', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20 }}>
+                        {/* Close */}
+                        <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', width: 36, height: 36, borderRadius: '50%', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>✕</button>
+
+                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                            <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg,var(--primary),var(--secondary))', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', margin: '0 auto 1rem' }}>🍽️</div>
+                            <h3 style={{ fontSize: '1.7rem', color: 'white', fontWeight: 900, fontFamily: "'Poppins',sans-serif", marginBottom: '0.4rem' }}>Easy Food-এ যোগ দিন</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>আপনার তথ্য প্রদান করে যাত্রা শুরু করুন।</p>
                         </div>
+
                         <form onSubmit={handleSubmit}>
                             {[['name', 'text', 'পূর্ণ নাম', 'আপনার নাম লিখুন'], ['phone', 'tel', 'ফোন নাম্বার', '+৮৮০']].map(([n, t, label, ph]) => (
-                                <div key={n} style={{ marginBottom: '1.5rem' }}>
-                                    <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: 600, color: 'white', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</label>
+                                <div key={n} style={{ marginBottom: '1.2rem' }}>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>
                                     <input type={t} name={n} required value={formData[n]} onChange={handleInputChange} placeholder={ph}
-                                        style={{ width: '100%', padding: '1rem 1.2rem', background: 'rgba(255,255,255,0.04)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }}
+                                        style={{ width: '100%', padding: '0.9rem 1rem', background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '0.95rem', outline: 'none', transition: 'border-color 0.25s', boxSizing: 'border-box' }}
                                         onFocus={e => e.target.style.borderColor = 'var(--primary)'}
                                         onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                                 </div>
                             ))}
-                            <div style={{ marginBottom: '2.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '1rem', fontWeight: 600, color: 'white', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>পছন্দের মেম্বারশিপ</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ marginBottom: '2rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Membership Plan</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                                     {[['weekly', 'সাপ্তাহিক', '৳ ১৪০০'], ['monthly', 'প্রফেশনাল', '৳ ৫০০০']].map(([val, name, price]) => (
-                                        <label key={val} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1.2rem', borderRadius: 16, border: formData.package === val ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)', background: formData.package === val ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'all 0.3s' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                        <label key={val} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', padding: '1rem', borderRadius: 12, border: formData.package === val ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.09)', background: formData.package === val ? 'rgba(249,115,22,0.07)' : 'rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'all 0.25s' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 <input type="radio" name="package" value={val} checked={formData.package === val} onChange={handleInputChange} />
-                                                <span style={{ fontWeight: 700, color: 'white' }}>{name}</span>
+                                                <span style={{ fontWeight: 700, color: 'white', fontSize: '0.9rem' }}>{name}</span>
                                             </div>
-                                            <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.3rem' }}>{price}</span>
+                                            <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.15rem' }}>{price}</span>
                                         </label>
                                     ))}
                                 </div>
                             </div>
-                            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem', fontWeight: 800 }}>অনুরোধ পাঠান →</button>
+                            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1.1rem', fontSize: '1rem', fontWeight: 800 }}>Easy Food-এ যোগ দিন →</button>
                         </form>
                     </div>
                 </div>
