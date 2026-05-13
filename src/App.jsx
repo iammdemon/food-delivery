@@ -43,6 +43,7 @@ const DashboardLayout = ({ children, title, user, activeTab, setActiveTab, balan
         {user?.role === 'customer' && (
           <div className="flex" style={{ marginRight: '1rem', background: 'var(--glass-bg)', borderRadius: '12px', padding: '0.3rem' }}>
             <button className={activeTab === 'menu' ? 'btn-primary' : 'btn-outline'} onClick={() => setActiveTab('menu')}>Menu</button>
+            <button className={activeTab === 'transactions' ? 'btn-primary' : 'btn-outline'} onClick={() => setActiveTab('transactions')}>Transactions</button>
             <button className={activeTab === 'profile' ? 'btn-primary' : 'btn-outline'} onClick={() => setActiveTab('profile')}>Profile</button>
           </div>
         )}

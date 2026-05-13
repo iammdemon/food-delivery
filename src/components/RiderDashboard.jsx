@@ -4,9 +4,43 @@ import toast from '../utils/toast';
 
 import API_BASE from '../api';
 
+const PayReceiptModal = ({ payment, onClose }) => {
+    const date = payment.timestamp
+        ? new Date(payment.timestamp).toLocaleString('en-GB')
+        : payment.date || '—';
+    const ref = payment._id ? payment._id.slice(-8).toUpperCase() : '—';
+    return (
+        <div onClick={onClose} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div onClick={e => e.stopPropagation()} className="glass-card" style={{ width: '340px', padding: '2rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '0.25rem' }}>💸</div>
+                <h3 style={{ marginBottom: '0.2rem' }}>Payment Receipt</h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>ফুড ক্যাটারিং বরিশাল</p>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
+                    {[
+                        ['Rider', payment.riderDisplayName || payment.riderName],
+                        ['Amount', `৳ ${payment.amount}`],
+                        ['Date', date],
+                        ['Ref #', ref],
+                    ].map(([label, val]) => (
+                        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{label}</span>
+                            <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{val}</span>
+                        </div>
+                    ))}
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    <button onClick={() => window.print()} className="btn-primary" style={{ flex: 1 }}>🖨️ Print</button>
+                    <button onClick={onClose} className="btn-outline" style={{ flex: 1 }}>Close</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const RiderDashboard = ({ riderId, username, orderHistory, setOrderHistory, payments, fetchData }) => {
-    const [deliveryPhotos, setDeliveryPhotos] = useState({}); // To store local base64 for unsaved orders
+    const [deliveryPhotos, setDeliveryPhotos] = useState({});
     const [isCompleting, setIsCompleting] = useState({});
+    const [payReceipt, setPayReceipt] = useState(null);
 
     // Helper to normalize strings (lowercase, alphanumeric only) for robust matching
     const normalize = (str) => {
@@ -246,6 +280,52 @@ const RiderDashboard = ({ riderId, username, orderHistory, setOrderHistory, paym
                     );
                 })}
             </section>
+
+            {/* Payment History */}
+            {(() => {
+                const myPayments = payments.filter(p => {
+                    const normP = normalize(p.riderName);
+                    return normP === normRiderId || normP === normUsername;
+                });
+                if (myPayments.length === 0) return null;
+                return (
+                    <section className="glass-card">
+                        <h3 style={{ marginBottom: '1.25rem' }}>💳 পেমেন্ট ইতিহাস</h3>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '380px' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                                        <th style={{ padding: '0.6rem 0.8rem', textAlign: 'left' }}>তারিখ</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', textAlign: 'right' }}>পরিমাণ</th>
+                                        <th style={{ padding: '0.6rem 0.8rem', textAlign: 'left' }}>Ref #</th>
+                                        <th style={{ padding: '0.6rem 0.8rem' }}></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {myPayments.map(p => {
+                                        const dt = p.timestamp ? new Date(p.timestamp).toLocaleDateString('en-GB') : p.date || '—';
+                                        const ref = p._id ? p._id.slice(-8).toUpperCase() : '—';
+                                        return (
+                                            <tr key={p._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.85rem' }}>
+                                                <td style={{ padding: '0.6rem 0.8rem', color: 'var(--text-muted)' }}>{dt}</td>
+                                                <td style={{ padding: '0.6rem 0.8rem', textAlign: 'right', color: '#10b981', fontWeight: '700' }}>৳ {p.amount}</td>
+                                                <td style={{ padding: '0.6rem 0.8rem', fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{ref}</td>
+                                                <td style={{ padding: '0.6rem 0.8rem' }}>
+                                                    <button onClick={() => setPayReceipt(p)} style={{ background: 'rgba(235,94,40,0.1)', border: '1px solid rgba(235,94,40,0.3)', color: 'var(--primary)', padding: '0.25rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}>
+                                                        🧾 Receipt
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                );
+            })()}
+
+            {payReceipt && <PayReceiptModal payment={payReceipt} onClose={() => setPayReceipt(null)} />}
         </div>
     );
 };

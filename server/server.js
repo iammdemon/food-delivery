@@ -30,6 +30,7 @@ app.use((req, res, next) => {
 // We will use standard imports for them assuming they export default or named exports.
 // If models use module.exports, we can still import them but might need default.
 
+import bcrypt from 'bcryptjs';
 import User from './models/User.js';
 import Menu from './models/Menu.js';
 import Order from './models/Order.js';
@@ -50,9 +51,14 @@ const connectToDatabase = async (req, res, next) => {
         if (!cachedConnection) {
             console.log('Creating new MongoDB connection...');
             cachedConnection = await mongoose.connect(process.env.MONGODB_URI, {
-                serverSelectionTimeoutMS: 5000 // Fail fast if no connection
+                serverSelectionTimeoutMS: 5000
             });
             console.log('MongoDB Connected ✅');
+            // Drop the stale unique email index so users without email don't conflict
+            try {
+                await mongoose.connection.collection('users').dropIndex('email_1');
+                console.log('Dropped stale email_1 index ✅');
+            } catch (_) { /* index didn't exist — that's fine */ }
         }
         next();
     } catch (err) {
@@ -85,7 +91,7 @@ app.get('/api/health', (req, res) => {
 
 // 1. Auth / User Routes
 app.post('/api/auth/login', async (req, res) => {
-    const { username, name, role } = req.body;
+    const { username, name, role, email } = req.body;
     try {
         let user = await User.findOne({ username });
 
@@ -111,7 +117,7 @@ app.post('/api/auth/login', async (req, res) => {
         if (!user) {
             const customId = await generateNextCustomId();
             // New user: use role from frontend (admin/kitchen/customer)
-            user = new User({ username, name, role, customId });
+            user = new User({ username, name, role, customId, email: email || null });
             await user.save();
         } else {
             // Existing user: Sync name, but only update role if it's a promotion to admin/kitchen
@@ -119,6 +125,7 @@ app.post('/api/auth/login', async (req, res) => {
             const newRole = (role === 'admin' || role === 'kitchen') ? role : user.role;
             user.name = name;
             user.role = newRole;
+            if (email) user.email = email;
             if (!user.customId) {
                 user.customId = await generateNextCustomId();
             }
@@ -127,6 +134,37 @@ app.post('/api/auth/login', async (req, res) => {
         res.json(user);
     } catch (err) {
         console.error('Login Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin: create a user with a hashed password stored in MongoDB
+app.post('/api/admin/create-user', async (req, res) => {
+    const { username, name, email, password, role } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
+    try {
+        const generateNextCustomId = async () => {
+            const lastUser = await User.findOne({ customId: /^EFC-/ }).sort({ customId: -1 });
+            let nextNum = 1001;
+            if (lastUser?.customId) {
+                const match = lastUser.customId.match(/\d+/);
+                if (match) nextNum = parseInt(match[0], 10) + 1;
+            }
+            let customId = `EFC-${nextNum}`;
+            while (await User.findOne({ customId })) { nextNum++; customId = `EFC-${nextNum}`; }
+            return customId;
+        };
+
+        const existing = await User.findOne({ username });
+        if (existing) return res.status(409).json({ error: 'Username already exists' });
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        const customId = await generateNextCustomId();
+        const user = new User({ username, name: name || username, email: email || null, passwordHash, role: role || 'customer', customId });
+        await user.save();
+        res.json(user);
+    } catch (err) {
+        console.error('Admin Create User Error:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -266,7 +304,8 @@ app.patch('/api/orders/:id', async (req, res) => {
 // 4. Top-Up Routes
 app.get('/api/topup', async (req, res) => {
     try {
-        const requests = await TopUpRequest.find().sort({ timestamp: -1 });
+        const filter = req.query.userId ? { userId: req.query.userId } : {};
+        const requests = await TopUpRequest.find(filter).sort({ timestamp: -1 });
         res.json(requests);
     } catch (err) {
         console.error('Get Topups Error:', err);
@@ -349,7 +388,8 @@ app.post('/api/riders', async (req, res) => {
 // 6. Rider Payment Routes
 app.get('/api/payments', async (req, res) => {
     try {
-        const payments = await Payment.find().sort({ timestamp: -1 });
+        const filter = req.query.rider ? { riderName: req.query.rider } : {};
+        const payments = await Payment.find(filter).sort({ timestamp: -1 });
         res.json(payments);
     } catch (err) {
         console.error('Get Payments Error:', err);

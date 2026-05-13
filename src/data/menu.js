@@ -17,5 +17,5 @@ export const INITIAL_MENU = {
 
 export const DEADLINES = {
   lunch: { hour: 10, minute: 0 },
-  dinner: { hour: 17, minute: 0 }
+  dinner: { hour: 23, minute: 59 }
 };

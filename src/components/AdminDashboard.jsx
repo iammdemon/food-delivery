@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { secondaryAuth } from '../firebase';
 import toast from '../utils/toast';
 
 import API_BASE from '../api';
@@ -25,6 +27,7 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
     const [payAmount, setPayAmount] = useState('');
     const [selectedRiderForPay, setSelectedRiderForPay] = useState('');
     const [viewProof, setViewProof] = useState(null);
+    const [payReceipt, setPayReceipt] = useState(null);
 
     // Filtering state
     const [filterType, setFilterType] = useState('all'); // all, 7d, 30d, 1y, custom
@@ -35,8 +38,12 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
     const [users, setUsers] = useState([]);
     const [userRoleFilter, setUserRoleFilter] = useState('all');
     const [userSearch, setUserSearch] = useState('');
-    const [newUserName, setNewUserName] = useState('');
+    const [newUserUsername, setNewUserUsername] = useState('');
+    const [newUserEmail, setNewUserEmail] = useState('');
+    const [newUserPassword, setNewUserPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [newUserRole, setNewUserRole] = useState('customer');
+    const [addUserLoading, setAddUserLoading] = useState(false);
 
     useEffect(() => {
         if (activeTab === 'users') fetchUsers();
@@ -72,19 +79,41 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 
     const addUser = async (e) => {
         e.preventDefault();
-        if (!newUserName.trim()) return;
-        const username = newUserName.trim().toLowerCase().replace(/\s+/g, '_');
+        if (!newUserUsername.trim() || !newUserEmail.trim() || !newUserPassword.trim()) return;
+        setAddUserLoading(true);
+        const username = newUserUsername.trim().toLowerCase().replace(/\s+/g, '_');
         try {
-            const res = await axios.post(`${API_BASE}/auth/login`, {
+            // Create Firebase account — if the email already exists in Firebase (e.g. user was
+            // previously deleted from MongoDB but not from Firebase), skip Firebase creation and
+            // just recreate the MongoDB record so the user can still log in.
+            try {
+                const result = await createUserWithEmailAndPassword(secondaryAuth, newUserEmail.trim(), newUserPassword);
+                await updateProfile(result.user, { displayName: newUserUsername.trim() });
+                await secondaryAuth.signOut();
+            } catch (firebaseErr) {
+                if (firebaseErr.code === 'auth/weak-password') throw new Error('Password must be at least 6 characters');
+                if (firebaseErr.code === 'auth/invalid-email') throw new Error('Invalid email address');
+                if (firebaseErr.code !== 'auth/email-already-in-use') throw firebaseErr;
+                // email-already-in-use: Firebase account still exists from before deletion — continue to recreate MongoDB record
+            }
+
+            // Create MongoDB user with hashed password
+            const res = await axios.post(`${API_BASE}/admin/create-user`, {
                 username,
-                name: newUserName.trim(),
-                role: newUserRole
+                name: newUserUsername.trim(),
+                email: newUserEmail.trim(),
+                password: newUserPassword,
+                role: newUserRole,
             });
             setUsers(prev => [res.data, ...prev]);
-            setNewUserName('');
-            alert(`User "${newUserName}" added as ${newUserRole}!`);
+            setNewUserUsername('');
+            setNewUserEmail('');
+            setNewUserPassword('');
+            toast.success(`User "${newUserUsername.trim()}" added as ${newUserRole}!`);
         } catch (err) {
-            alert('Failed to add user');
+            toast.error(err.message || err.response?.data?.error || 'Failed to add user');
+        } finally {
+            setAddUserLoading(false);
         }
     };
 
@@ -259,6 +288,34 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                 </div>
             )}
 
+            {/* Pay Receipt Modal */}
+            {payReceipt && (
+                <div onClick={() => setPayReceipt(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div onClick={e => e.stopPropagation()} className="glass-card" style={{ width: '360px', padding: '2rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🧾</div>
+                        <h3 style={{ marginBottom: '0.25rem' }}>Payment Receipt</h3>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>ফুড ক্যাটারিং বরিশাল</p>
+                        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
+                            {[
+                                ['Rider', payReceipt.riderDisplayName || payReceipt.riderName],
+                                ['Amount', `৳ ${payReceipt.amount}`],
+                                ['Date', payReceipt.date],
+                                ['Ref #', payReceipt._id ? payReceipt._id.slice(-8).toUpperCase() : '—'],
+                            ].map(([label, val]) => (
+                                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{label}</span>
+                                    <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{val}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button onClick={() => window.print()} className="btn-primary" style={{ flex: 1 }}>🖨️ Print</button>
+                            <button onClick={() => setPayReceipt(null)} className="btn-outline" style={{ flex: 1 }}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Admin Tab Navigation */}
             {/* Admin Tab Navigation */}
             <nav className="flex" style={{ gap: '0.5rem', background: 'var(--glass-bg)', padding: '0.5rem', borderRadius: '12px', flexWrap: 'wrap' }}>
@@ -419,13 +476,18 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                             e.preventDefault();
                             if (!selectedRiderForPay || !payAmount) return;
                             try {
-                                await axios.post(`${API_BASE}/payments`, {
+                                const riderObj = riders.find(r => r.username === selectedRiderForPay);
+                                const paymentData = {
                                     riderName: selectedRiderForPay,
+                                    riderDisplayName: riderObj?.name || selectedRiderForPay,
                                     amount: parseFloat(payAmount),
-                                    date: new Date().toLocaleDateString()
-                                });
+                                    date: new Date().toLocaleDateString('en-GB'),
+                                    timestamp: new Date().toISOString(),
+                                };
+                                const res = await axios.post(`${API_BASE}/payments`, paymentData);
                                 fetchData();
                                 setPayAmount('');
+                                setPayReceipt({ ...paymentData, _id: res.data._id });
                                 toast.success('পেমেন্ট সফল হয়েছে! 💸');
                             } catch (err) {
                                 toast.error('পেমেন্ট রেকর্ড করা সম্ভব হয়নি');
@@ -447,32 +509,67 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                     {/* Add User */}
                     <section className="glass-card">
                         <h3 style={{ marginBottom: '1.5rem' }}>➕ Add User Manually</h3>
-                        <form onSubmit={addUser} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                            <div style={{ flex: '1 1 200px' }}>
-                                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Full Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Karim Hossain"
-                                    value={newUserName}
-                                    onChange={e => setNewUserName(e.target.value)}
-                                    required
-                                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
-                                />
+                        <form onSubmit={addUser}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Username</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. karim_hossain"
+                                        value={newUserUsername}
+                                        onChange={e => setNewUserUsername(e.target.value)}
+                                        required
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Email</label>
+                                    <input
+                                        type="email"
+                                        placeholder="e.g. karim@example.com"
+                                        value={newUserEmail}
+                                        onChange={e => setNewUserEmail(e.target.value)}
+                                        required
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Password</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="Min. 6 characters"
+                                            value={newUserPassword}
+                                            onChange={e => setNewUserPassword(e.target.value)}
+                                            required
+                                            style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 2.4rem 0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(p => !p)}
+                                            style={{ position: 'absolute', right: '0.6rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem', padding: 0 }}
+                                        >
+                                            {showPassword ? '🙈' : '👁️'}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Role</label>
+                                    <select
+                                        value={newUserRole}
+                                        onChange={e => setNewUserRole(e.target.value)}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                                    >
+                                        <option value="customer">Customer</option>
+                                        <option value="rider">Rider</option>
+                                        <option value="kitchen">Kitchen</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div style={{ flex: '0 0 160px' }}>
-                                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Role</label>
-                                <select
-                                    value={newUserRole}
-                                    onChange={e => setNewUserRole(e.target.value)}
-                                    style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 0.8rem', borderRadius: '8px', fontSize: '0.9rem' }}
-                                >
-                                    <option value="customer">Customer</option>
-                                    <option value="rider">Rider</option>
-                                    <option value="kitchen">Kitchen</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                            <button type="submit" className="btn-primary" style={{ padding: '0.6rem 1.5rem', whiteSpace: 'nowrap' }}>Add User</button>
+                            <button type="submit" className="btn-primary" disabled={addUserLoading} style={{ padding: '0.6rem 1.8rem' }}>
+                                {addUserLoading ? 'Adding...' : 'Add User'}
+                            </button>
                         </form>
                     </section>
 
