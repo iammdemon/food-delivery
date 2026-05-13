@@ -16,6 +16,11 @@ const ROLE_COLORS = {
 const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments, setPayments, topUpRequests, setTopUpRequests, subscriptionRequests, setSubscriptionRequests, fetchData }) => {
     const [activeTab, setActiveTab] = useState('overview');
 
+    // Refresh topup data whenever admin opens that tab
+    useEffect(() => {
+        if (activeTab === 'payments') fetchData();
+    }, [activeTab, fetchData]);
+
     // Menu form state
     const [itemName, setItemName] = useState('');
     const [itemPrice, setItemPrice] = useState('');
@@ -687,7 +692,13 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
 
             {activeTab === 'payments' && (
                 <section className="glass-card">
-                    <h3>🏦 বিকাশ টপ-আপ রিকোয়েস্ট</h3>
+                    <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <h3 style={{ margin: 0 }}>🏦 বিকাশ টপ-আপ রিকোয়েস্ট</h3>
+                        <div className="flex" style={{ alignItems: 'center', gap: '1rem' }}>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{topUpRequests.filter(r => r.status === 'Pending').length} পেন্ডিং</span>
+                            <button onClick={() => fetchData()} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}>🔄 Refresh</button>
+                        </div>
+                    </div>
                     <div style={{ overflowX: 'auto', marginTop: '1.5rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
                             <thead>
@@ -708,8 +719,8 @@ const AdminDashboard = ({ menu, setMenu, orderHistory, setOrderHistory, payments
                                     return (
                                         <tr key={req._id || req.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                                             <td style={{ padding: '0.8rem', fontSize: '0.8rem' }}>
-                                                <div>{req.date}</div>
-                                                <div style={{ color: 'var(--text-muted)' }}>{req.time}</div>
+                                                <div>{req.timestamp ? new Date(req.timestamp).toLocaleDateString('en-GB') : '—'}</div>
+                                                <div style={{ color: 'var(--text-muted)' }}>{req.timestamp ? new Date(req.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : ''}</div>
                                             </td>
                                             <td style={{ padding: '0.8rem' }}>
                                                 <div style={{ fontWeight: 'bold' }}>{req.username}</div>
